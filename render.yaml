@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: xiaoyuan-player
+    env: node
+    buildCommand: ""
+    startCommand: node server.js
+    plan: free
