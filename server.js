@@ -132,9 +132,18 @@ http.createServer(function(req,res){
   if(pt==='/'||pt==='/index.html'){serveFile(path.join(__dirname,'index.html'),{'Content-Type':'text/html; charset=utf-8'});return}
 
   if(pt==='/ping'){
-    get('https://music.163.com/api/search/get/web?csrf_token=&s=test&type=1&offset=0&total=false&limit=1',{},5000)
-    .then(function(d){send(200,{ok:!0,sources:KEYS,netease:{accessible:!!(d&&d.result),code:d.code||0}})})
-    .catch(function(e){send(200,{ok:!0,sources:KEYS,netease:{accessible:false,error:e.message}})})
+    var results={netease:{},gdstudio:{},suggest:{}};
+    Promise.all([
+      get('https://music.163.com/api/search/get/web?csrf_token=&s=%E5%91%A8%E6%9D%B0%E4%BC%A6&type=1&offset=0&total=true&limit=3',{},6000)
+        .then(function(d){results.netease={accessible:!!(d&&d.result),songs:(d&&d.result&&d.result.songs)?d.result.songs.length:0,code:d.code||0}})
+        .catch(function(e){results.netease={error:e.message}}),
+      get('https://music-api.gdstudio.xyz/api.php?types=search&source=netease&name=%E5%91%A8%E6%9D%B0%E4%BC%A6',{},6000)
+        .then(function(d){results.gdstudio={accessible:Array.isArray(d),songs:Array.isArray(d)?d.length:0}})
+        .catch(function(e){results.gdstudio={error:e.message}}),
+      get('https://music.163.com/api/search/suggest/web?csrf_token=&s=%E5%91%A8%E6%9D%B0%E4%BC%A6&limit=10',{},6000)
+        .then(function(d){results.suggest={accessible:!!(d&&d.result),songs:(d&&d.result&&d.result.songs)?d.result.songs.length:0}})
+        .catch(function(e){results.suggest={error:e.message}})
+    ]).then(function(){send(200,{ok:!0,sources:KEYS,debug:results})})
     return
   }
 
