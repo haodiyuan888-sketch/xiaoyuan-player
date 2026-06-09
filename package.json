@@ -1,0 +1,14 @@
+{
+  "name": "xiaoyuan-player",
+  "version": "1.0.0",
+  "description": "小源音乐播放器 - 7个独立音源在线音乐播放",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": ["music", "player"],
+  "license": "MIT"
+}
