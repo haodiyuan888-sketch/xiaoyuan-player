@@ -22,17 +22,7 @@ function lrc163(sid){
   .then(function(d){return(d&&d.lrc&&d.lrc.lyric)?d.lrc.lyric:''})
 }
 
-// ── gdstudio 代理搜索（绕过网易云海外IP限制）──
-function searchGd(kw){
-  return get('https://music-api.gdstudio.xyz/api.php?types=search&source=netease&name='+encodeURIComponent(kw),{},8000)
-  .then(function(d){
-    if(!Array.isArray(d)||!d.length) return[];
-    return d.map(function(it){return{id:String(it.id),name:it.name,artist:Array.isArray(it.artist)?it.artist.join(' / '):(it.artist||''),album:it.album||'',pic:it.pic_id?'https://music.163.com/api/img/song/'+it.pic_id:''}})
-  })
-}
-
-// 搜索：先用网易云（国内IP可用），失败/返回空则用gdstudio代理
-function searchSong(kw){return search163(kw).then(function(r){if(r.length)return r;return searchGd(kw)}).catch(function(){return searchGd(kw)})}
+// ── 搜索回退链：网易云搜索 → gdstudio代理 → 网易云suggest ──
 
 function search163(kw){
   return get('https://music.163.com/api/search/get/web?csrf_token=&s='+encodeURIComponent(kw)+'&type=1&offset=0&total=true&limit=30',{},5000)
@@ -41,6 +31,27 @@ function search163(kw){
     if(!d.result.songs||!d.result.songs.length) return[];
     return d.result.songs.map(function(s){var a=s.album||s.al||{};return{id:String(s.id),name:s.name,artist:(s.artists||s.ar||[]).map(function(x){return x.name}).join(' / '),album:a.name||'',pic:a.picUrl||a.pic||''}})
   })
+}
+
+function searchGd(kw){
+  return get('https://music-api.gdstudio.xyz/api.php?types=search&source=netease&name='+encodeURIComponent(kw),{},8000)
+  .then(function(d){
+    if(!Array.isArray(d)||!d.length) return[];
+    return d.map(function(it){return{id:String(it.id),name:it.name,artist:Array.isArray(it.artist)?it.artist.join(' / '):(it.artist||''),album:it.album||'',pic:it.pic_id?'https://music.163.com/api/img/song/'+it.pic_id:''}})
+  })
+}
+
+function searchSuggest(kw){
+  return get('https://music.163.com/api/search/suggest/web?csrf_token=&s='+encodeURIComponent(kw)+'&limit=30',{},6000)
+  .then(function(d){
+    if(!d||!d.result) return[];
+    var songs=(d.result.songs||[]).map(function(s){return{id:String(s.id),name:s.name,artist:(s.artists||s.ar||[]).map(function(x){return x.name}).join(' / '),album:(s.album||s.al||{}).name||'',pic:(s.album||s.al||{}).picUrl||''}})
+    return songs
+  })
+}
+
+function searchSong(kw){
+  return search163(kw).then(function(r){if(r.length)return r;return searchGd(kw).then(function(r2){if(r2.length)return r2;return searchSuggest(kw)})}).catch(function(){return searchGd(kw).then(function(r2){if(r2.length)return r2;return searchSuggest(kw)}).catch(function(){return searchSuggest(kw)})})
 }
 
 // ═══════ 7个独立音源 ═══════
