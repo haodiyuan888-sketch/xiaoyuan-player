@@ -187,5 +187,37 @@ http.createServer(function(req,res){
     return
   }
 
+  // 下载代理（绕过 CORS 限制，直接流式传输音频）
+  if(pt==='/api/download'){
+    var s=q.source||KEYS[0],sid=q.id||'',sn=q.name||'song';
+    if(!sid||!SRC[s]) return send(400,{error:'无效参数'});
+    var tasks=SRC[s].urls(sid);
+    Promise.all(tasks.map(function(t){return t.u.then(function(url){return url}).catch(function(){return null})}))
+    .then(function(urls){
+      var au=urls.find(function(u){return u&&u.startsWith('http')});
+      if(!au){res.writeHead(404);res.end('no url');return}
+      var proto=au.startsWith('https')?https:http;
+      proto.get(au,{headers:NETEASE_HDR,timeout:15000},function(r2){
+        if(r2.statusCode>=300&&r2.statusCode<400&&r2.headers.location){
+          var redir=r2.headers.location,proto2=redir.startsWith('https')?https:http;
+          proto2.get(redir,{headers:NETEASE_HDR,timeout:15000},function(r3){streamRes(r3)}).on('error',function(){res.writeHead(502);res.end('err')})
+          return
+        }
+        streamRes(r2)
+      }).on('error',function(){res.writeHead(502);res.end('err')});
+      function streamRes(sr){
+        var fn=sn.replace(/[\\/:*?"<>|]/g,'_')+'.mp3';
+        res.writeHead(200,Object.assign({
+          'Content-Type':sr.headers['content-type']||'audio/mpeg',
+          'Content-Disposition':'attachment; filename="'+encodeURIComponent(fn)+'"',
+          'Content-Length':sr.headers['content-length']||'',
+          'Accept-Ranges':'bytes'
+        },CORS));
+        sr.pipe(res)
+      }
+    }).catch(function(){res.writeHead(502);res.end('err')})
+    return
+  }
+
   send(404,{error:'接口不存在'});
 }).listen(PORT,function(){console.log('☀️ 小源启动 → 端口 ' + PORT)});
