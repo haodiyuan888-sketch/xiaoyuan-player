@@ -51,7 +51,18 @@ function searchSuggest(kw){
 }
 
 function searchSong(kw){
-  return search163(kw).then(function(r){if(r.length)return r;return searchGd(kw).then(function(r2){if(r2.length)return r2;return searchSuggest(kw)})}).catch(function(){return searchGd(kw).then(function(r2){if(r2.length)return r2;return searchSuggest(kw)}).catch(function(){return searchSuggest(kw)})})
+  // 多源并发 → 去重 → 返回最大结果集
+  return Promise.allSettled([
+    searchGd(kw),
+    searchSuggest(kw),
+    search163(kw).catch(function(){return[]}),
+    // 尝试变体搜索（拼音/英文名可能返回不同结果）
+    searchGd(kw.replace(/[^一-龥]/g,'')).catch(function(){return[]})
+  ]).then(function(rs){
+    var all=[],seen={};
+    rs.forEach(function(r){if(r.status==='fulfilled'&&Array.isArray(r.value))r.value.forEach(function(s){var k=s.id||'';if(!seen[k]){seen[k]=true;all.push(s)}})});
+    return all
+  })
 }
 
 // ═══════ 7个独立音源 ═══════
