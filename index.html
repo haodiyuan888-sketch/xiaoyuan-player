@@ -73,7 +73,7 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 .pl-seek{display:flex;align-items:center;gap:10px;padding:4px 0 6px}
 .pl-seek span{font-size:0.64rem;color:var(--s2);min-width:34px}
 .pl-seek span:last-child{text-align:right}
-.pl-seek input{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--accent) var(--pg,0%),#e8e4df var(--pg,0%))}
+.pl-seek input{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--accent) var(--pg,0%),#ddd9d2 var(--pg,0%))}
 .pl-seek input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
 .pl-row{display:flex;align-items:center;gap:10px}
 .pl-cover{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f0ebe0}
@@ -369,7 +369,7 @@ g('mdPlist').addEventListener('click',function(e){if(e.target===this)g('mdPlist'
 
 // ═══════ 音频事件 ═══════
 audio.addEventListener('timeupdate',function(){
-if(!audio.duration)return;var p=(audio.currentTime/audio.duration)*100;g('plProg').style.setProperty('--pg',p+'%');g('plSeek').value=p;g('plSeek').style.setProperty('--pg',p+'%');g('plCur').textContent=fmt(audio.currentTime);
+if(!audio.duration)return;var p=Math.round((audio.currentTime/audio.duration)*100);g('plSeek').value=p;g('plSeek').style.setProperty('--pg',p+'%');g('plCur').textContent=fmt(audio.currentTime);
 if(st.lrc.length){var ct=audio.currentTime,ai=-1;for(var i=st.lrc.length-1;i>=0;i--){if(st.lrc[i].time<=ct){ai=i;break}}
 var lines=$$('.ll');lines.forEach(function(e){var idx=parseInt(e.dataset.li);e.classList.remove('on','pre');if(idx===ai)e.classList.add('on');else if(idx===ai-1)e.classList.add('pre')});
 if(ai>=0&&ai!==st._lrcIdx){st._lrcIdx=ai;var onEl=lines[ai];if(onEl)onEl.scrollIntoView({block:'center',behavior:'smooth'})}}});
