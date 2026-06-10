@@ -37,7 +37,7 @@ function searchGd(kw){
   return get('https://music-api.gdstudio.xyz/api.php?types=search&source=netease&name='+encodeURIComponent(kw),{},8000)
   .then(function(d){
     if(!Array.isArray(d)||!d.length) return[];
-    return d.map(function(it){return{id:String(it.id),name:it.name,artist:Array.isArray(it.artist)?it.artist.join(' / '):(it.artist||''),album:it.album||'',pic:it.pic_id?'https://music.163.com/api/img/song/'+it.pic_id:''}})
+    return d.map(function(it){return{id:String(it.id),name:it.name,artist:Array.isArray(it.artist)?it.artist.join(' / '):(it.artist||''),album:it.album||'',pic:''}})
   })
 }
 

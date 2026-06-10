@@ -58,7 +58,8 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 .srow.pl{background:rgba(232,135,58,0.04)}
 .srow.pl .sn{color:var(--accent)}
 .srow .sx{width:28px;text-align:center;color:var(--s2);font-size:0.72rem;flex-shrink:0}
-.srow .si2{width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f0ebe0}
+.srow .si2{width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0}
+.srow .si2.ph{display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:#fff;flex-shrink:0}
 .srow .sn{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .srow .sa{width:130px;color:var(--s1);font-size:0.73rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
 .srow .sal{width:110px;color:var(--s1);font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
@@ -225,7 +226,9 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 
 <script>
 (function(){
-var A='',NC='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#faf2e8" width="100" height="100"/><text x="50" y="65" text-anchor="middle" font-size="44" fill="#e8873a">♪</text></svg>');
+var A='';var GRADS=[['#e8873a','#f5a623'],['#e91e63','#ff5722'],['#1abc9c','#2ecc71'],['#9b59b6','#8e44ad'],['#3498db','#2980b9'],['#00bcd4','#0097a7'],['#ff6f00','#ff8f00'],['#43a047','#66bb6a']];
+function cover(s){if(s.pic&&s.pic.startsWith('http')&&s.pic.indexOf('api/img/song')===-1)return'<img class="si2" src="'+s.pic+'?param=80y80" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">';var c=(s.name||'?').charCodeAt(0)%GRADS.length,g=GRADS[c],ch=(s.name||'?')[0];return'<div class="si2 ph" style="background:linear-gradient(135deg,'+g[0]+','+g[1]+')">'+ch+'</div>'}
+var NC='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#faf2e8" width="100" height="100"/><text x="50" y="65" text-anchor="middle" font-size="44" fill="#e8873a">♪</text></svg>');
 function g(id){return document.getElementById(id)}
 function $$(sel,el){return(el||document).querySelectorAll(sel)}
 function toast(m,t){t=t||1800;var e=g('toast');e.textContent=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},t)}
@@ -263,7 +266,7 @@ var currentTab='discover';
 function renderList(el,songs){if(!songs||!songs.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-music"></i><span class="et">暂无歌曲</span></div>';return}
 var d=sd[st.cur],sngs=songs,h='<div class="slist"><div class="sh"><span class="sh-n">#</span><span class="sh-t">歌曲</span><span class="sh-a">歌手</span><span class="sh-al">专辑</span></div>';
 h+=sngs.map(function(s,i){var n=s.name||'?',a=s.artist||'?',al=s.album||'?',cu=i===d.idx;
-return'<div class="srow'+(cu?' pl':'')+'" data-i="'+i+'"><span class="sx">'+(i+1)+'</span><img class="si2" src="'+(s.pic&&s.pic.startsWith('http')?s.pic+'?param=80y80':NC)+'" loading="lazy" onerror="this.src=\''+NC+'\'"><span class="sn">'+n+'<span class="sa-inline" style="color:var(--s1);font-weight:400"> — '+a+'</span></span><span class="sa">'+a+'</span><span class="sal">'+al+'</span><div class="sact"><span data-act="fav" title="收藏"><i class="fa-regular fa-heart"></i></span><span data-act="add" title="加入歌单"><i class="fa-solid fa-folder-plus"></i></span></div></div>'}).join('');
+return'<div class="srow'+(cu?' pl':'')+'" data-i="'+i+'"><span class="sx">'+(i+1)+'</span>'+cover(s)+'<span class="sn">'+n+'<span class="sa-inline" style="color:var(--s1);font-weight:400"> — '+a+'</span></span><span class="sa">'+a+'</span><span class="sal">'+al+'</span><div class="sact"><span data-act="fav" title="收藏"><i class="fa-regular fa-heart"></i></span><span data-act="add" title="加入歌单"><i class="fa-solid fa-folder-plus"></i></span></div></div>'}).join('');
 el.innerHTML=h+'</div>';
 el.querySelectorAll('.srow').forEach(function(rw){rw.addEventListener('click',function(ev){var i=parseInt(this.dataset.i);
 if(ev.target.closest('[data-act="fav"]')){addFav(sngs[i]);ev.stopPropagation();return}
