@@ -74,6 +74,11 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 .pl-info{flex:1;min-width:0;cursor:pointer}
 .pl-name{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pl-art{font-size:0.7rem;color:var(--s1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.pl-seek{display:flex;align-items:center;gap:8px;margin-top:6px}
+.pl-seek span{font-size:0.62rem;color:var(--s2);min-width:30px}
+.pl-seek span:last-child{text-align:right}
+.pl-seek input{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--accent) var(--pg,0%),#e8e4df var(--pg,0%))}
+.pl-seek input::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
 .pl-ctrl{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .pl-ctrl button{background:none;border:none;color:var(--txt);font-size:1rem;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.12s}
 .pl-ctrl .pl-play{width:42px;height:42px;background:var(--gr);color:#fff;border-radius:50%;font-size:1rem}
@@ -140,11 +145,13 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 }
 @media(max-width:480px){
   html{font-size:15px}.app{padding:0 10px var(--btm) 10px;gap:10px}
-  .player{height:64px;padding:6px 10px;gap:4px}
-  :root{--btm:64px}
-  .pl-cover{width:38px;height:38px}.pl-name{font-size:0.78rem}
-  .pl-ctrl button{width:30px;height:30px;font-size:0.9rem}
-  .pl-ctrl .pl-play{width:36px;height:36px}
+  .player{height:auto;padding:8px 10px;gap:4px;flex-wrap:wrap}
+  :root{--btm:auto}.player{position:fixed;bottom:0;left:0;right:0}
+  .pl-cover{width:36px;height:36px}.pl-name{font-size:0.76rem}
+  .pl-ctrl button{width:28px;height:28px;font-size:0.85rem}
+  .pl-ctrl .pl-play{width:34px;height:34px}
+  .pl-seek{margin-top:4px}.pl-seek span{font-size:0.6rem;min-width:26px}
+  .pl-info{flex:1;min-width:0}
 }
 @media(max-width:360px){html{font-size:14px}.top{gap:8px}.sbox input{font-size:0.8rem;padding:8px 12px 8px 30px}}
 </style>
@@ -171,7 +178,18 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
   <!-- 内容区 -->
   <div id="content"></div>
   <!-- 底部版权 -->
-  <div style="text-align:center;font-size:0.66rem;color:var(--s3);padding:8px 0 4px">小源音乐 © 2026</div>
+  <div style="text-align:center;padding:16px 0 8px">
+    <div style="font-size:0.78rem;font-weight:600;color:var(--s1);margin-bottom:6px">📬 联系我</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:0.72rem;color:var(--s1);margin-bottom:10px">
+      <span style="cursor:pointer;padding:6px 14px;border-radius:50px;background:var(--card);border:1px solid var(--br)" data-cp="15516993901"><i class="fa-brands fa-weixin" style="color:#07c160"></i> 微信: 15516993901</span>
+      <span style="cursor:pointer;padding:6px 14px;border-radius:50px;background:var(--card);border:1px solid var(--br)" data-cp="haodiyuan888@gmail.com"><i class="fa-solid fa-envelope" style="color:#ea4335"></i> haodiyuan888@gmail.com</span>
+      <span style="cursor:pointer;padding:6px 14px;border-radius:50px;background:var(--card);border:1px solid var(--br)" data-cp="1987161356"><i class="fa-brands fa-qq" style="color:#12b7f5"></i> QQ: 1987161356</span>
+    </div>
+    <div style="font-size:0.66rem;color:var(--s2);line-height:1.8;max-width:400px;margin:0 auto">
+      本网页<strong>仅供娱乐</strong>，音乐资源来自互联网开放接口<br>如有侵权内容，请联系我，将<strong>立即删除</strong>
+    </div>
+    <div style="font-size:0.62rem;color:var(--s3);margin-top:8px">小源音乐 © 2026</div>
+  </div>
 </div>
 <!-- 底部播放器 -->
 <div class="player" id="player">
@@ -180,6 +198,7 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
   <div class="pl-info" id="plInfo">
     <div class="pl-name" id="plName">选择歌曲开始播放</div>
     <div class="pl-art" id="plArt">小源音乐</div>
+    <div class="pl-seek"><span id="plCur">00:00</span><input type="range" id="plSeek" min="0" max="100" value="0"><span id="plDur">00:00</span></div>
   </div>
   <div class="pl-ctrl">
     <button id="plMode" title="循环"><i class="fa-solid fa-repeat"></i></button>
@@ -314,6 +333,7 @@ else{el.innerHTML='<div class="empty"><i class="fa-solid fa-music"></i><span cla
 
 // ═══════ 播放控制 ═══════
 function tp(){var d=sd[st.cur],songs=d._songs||d.songs;if(!songs.length)return;if(d.idx<0){play(0);return}if(st.play){audio.pause();st.play=false}else{audio.play().then(function(){st.play=true}).catch(function(){play(d.idx)})}upPbtn()}
+g('plSeek').addEventListener('input',function(){if(audio.duration||!isNaN(audio.duration))audio.currentTime=(this.value/100)*audio.duration})
 function nxt(){var d=sd[st.cur],songs=d._songs||d.songs;if(songs.length)play(st.mode==='shuffle'?Math.floor(Math.random()*songs.length):(d.idx+1)%songs.length)}
 function prv(){var d=sd[st.cur],songs=d._songs||d.songs;if(!songs.length)return;if(audio.currentTime>3){audio.currentTime=0;return}play((d.idx-1+songs.length)%songs.length)}
 
@@ -345,15 +365,18 @@ g('mdPlist').addEventListener('click',function(e){if(e.target===this)g('mdPlist'
 
 // ═══════ 音频事件 ═══════
 audio.addEventListener('timeupdate',function(){
-if(!audio.duration)return;var p=(audio.currentTime/audio.duration)*100;g('plProg').style.setProperty('--pg',p+'%');
+if(!audio.duration)return;var p=(audio.currentTime/audio.duration)*100;g('plProg').style.setProperty('--pg',p+'%');g('plSeek').value=p;g('plSeek').style.setProperty('--pg',p+'%');g('plCur').textContent=fmt(audio.currentTime);
 if(st.lrc.length){var ct=audio.currentTime,ai=-1;for(var i=st.lrc.length-1;i>=0;i--){if(st.lrc[i].time<=ct){ai=i;break}}
 var lines=$$('.ll');lines.forEach(function(e){var idx=parseInt(e.dataset.li);e.classList.remove('on','pre');if(idx===ai)e.classList.add('on');else if(idx===ai-1)e.classList.add('pre')});
 if(ai>=0&&ai!==st._lrcIdx){st._lrcIdx=ai;var onEl=lines[ai];if(onEl)onEl.scrollIntoView({block:'center',behavior:'smooth'})}}});
-audio.addEventListener('loadedmetadata',function(){});
+audio.addEventListener('loadedmetadata',function(){g('plDur').textContent=fmt(audio.duration)});
 audio.addEventListener('ended',function(){if(st.mode==='repeat-one'){audio.currentTime=0;audio.play();return}nxt()});
 audio.addEventListener('error',function(){nxt()});
 audio.addEventListener('play',function(){st.play=true;upPbtn()});
 audio.addEventListener('pause',function(){st.play=false;upPbtn()});
+
+// ═══════ 联系我复制 ═══════
+$$('[data-cp]').forEach(function(e){e.addEventListener('click',function(){var cp=this.dataset.cp;if(cp&&navigator.clipboard){navigator.clipboard.writeText(cp).then(function(){toast('已复制: '+cp)}).catch(function(){toast('复制失败')})}})});
 
 // ═══════ 初始化 ═══════
 (function init(){
