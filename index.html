@@ -69,20 +69,21 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 @media(hover:hover){.srow:hover .sact span{opacity:1}}
 
 /* ═══════ 底部播放器 ═══════ */
-.player{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--br);z-index:100;padding:8px 16px;display:flex;align-items:center;gap:10px;height:var(--btm);box-shadow:0 -2px 12px rgba(0,0,0,0.03)}
+.player{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--br);z-index:100;padding:6px 16px 8px;box-shadow:0 -2px 12px rgba(0,0,0,0.03)}
+.pl-seek{display:flex;align-items:center;gap:10px;padding:4px 0 6px}
+.pl-seek span{font-size:0.64rem;color:var(--s2);min-width:34px}
+.pl-seek span:last-child{text-align:right}
+.pl-seek input{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--accent) var(--pg,0%),#e8e4df var(--pg,0%))}
+.pl-seek input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.pl-row{display:flex;align-items:center;gap:10px}
 .pl-cover{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f0ebe0}
 .pl-info{flex:1;min-width:0;cursor:pointer}
 .pl-name{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pl-art{font-size:0.7rem;color:var(--s1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.pl-seek{display:flex;align-items:center;gap:8px;margin-top:6px}
-.pl-seek span{font-size:0.62rem;color:var(--s2);min-width:30px}
-.pl-seek span:last-child{text-align:right}
-.pl-seek input{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--accent) var(--pg,0%),#e8e4df var(--pg,0%))}
-.pl-seek input::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
-.pl-ctrl{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.pl-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .pl-ctrl button{background:none;border:none;color:var(--txt);font-size:1rem;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.12s}
 .pl-ctrl .pl-play{width:42px;height:42px;background:var(--gr);color:#fff;border-radius:50%;font-size:1rem}
-.pl-prog{display:none;position:absolute;top:-2px;left:0;right:0;height:3px;background:linear-gradient(to right,var(--accent) var(--pg,0%),transparent var(--pg,0%))}
+.pl-prog{display:none}
 
 /* ═══════ 歌词面板 ═══════ */
 .lyric-panel{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
@@ -134,24 +135,26 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 /* ═══════ 响应式 ═══════ */
 @media(min-width:900px){
   .lyric-panel{justify-content:flex-end}.lyric-in{margin-right:20px;max-height:80vh}
-  .sh-a,.sh-al{display:block}.srow .sa,.srow .sal{display:block}
+  .srow .sa{display:block}.srow .sal{display:block}.sh-a,.sh-al{display:block}
+  .srow .sn .sa-inline{display:none}
 }
 @media(max-width:900px){
-  .sh-a,.sh-al{display:none}.srow .sa,.srow .sal{display:none}
+  .srow .sa,.srow .sal{display:none}.sh-a,.sh-al{display:none}
   .srow{gap:6px;padding:8px 12px;font-size:0.8rem}
   .srow .si2{width:34px;height:34px}
-  .player{padding:8px 12px;gap:6px}
-  .pl-ctrl{gap:4px}
+  .player{padding:6px 10px 8px}
+  .pl-ctrl{gap:2px}.pl-ctrl button{width:30px;height:30px;font-size:0.9rem}.pl-ctrl .pl-play{width:36px;height:36px}
+  .pl-seek{padding:2px 0 4px}.pl-seek input{height:6px}.pl-seek input::-webkit-slider-thumb{width:18px;height:18px}
 }
 @media(max-width:480px){
-  html{font-size:15px}.app{padding:0 10px var(--btm) 10px;gap:10px}
-  .player{height:auto;padding:8px 10px;gap:4px;flex-wrap:wrap}
-  :root{--btm:auto}.player{position:fixed;bottom:0;left:0;right:0}
+  html{font-size:15px}.app{padding:0 10px 120px 10px;gap:10px}
+  :root{--btm:auto}.player{position:fixed;bottom:0;left:0;right:0;padding:4px 10px 6px}
   .pl-cover{width:36px;height:36px}.pl-name{font-size:0.76rem}
-  .pl-ctrl button{width:28px;height:28px;font-size:0.85rem}
-  .pl-ctrl .pl-play{width:34px;height:34px}
-  .pl-seek{margin-top:4px}.pl-seek span{font-size:0.6rem;min-width:26px}
+  .pl-ctrl button{width:28px;height:28px;font-size:0.82rem}
+  .pl-ctrl .pl-play{width:34px;height:34px;font-size:0.9rem}
+  .pl-seek span{font-size:0.6rem;min-width:28px}
   .pl-info{flex:1;min-width:0}
+  .pl-row{gap:6px}
 }
 @media(max-width:360px){html{font-size:14px}.top{gap:8px}.sbox input{font-size:0.8rem;padding:8px 12px 8px 30px}}
 </style>
@@ -193,21 +196,22 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-tap-highlig
 </div>
 <!-- 底部播放器 -->
 <div class="player" id="player">
-  <div class="pl-prog" id="plProg"></div>
-  <img class="pl-cover" id="plCover" src="" alt="">
-  <div class="pl-info" id="plInfo">
-    <div class="pl-name" id="plName">选择歌曲开始播放</div>
-    <div class="pl-art" id="plArt">小源音乐</div>
-    <div class="pl-seek"><span id="plCur">00:00</span><input type="range" id="plSeek" min="0" max="100" value="0"><span id="plDur">00:00</span></div>
-  </div>
-  <div class="pl-ctrl">
-    <button id="plMode" title="循环"><i class="fa-solid fa-repeat"></i></button>
-    <button id="plPrev"><i class="fa-solid fa-backward-step"></i></button>
-    <button class="pl-play" id="plPlay"><i class="fa-solid fa-play"></i></button>
-    <button id="plNext"><i class="fa-solid fa-forward-step"></i></button>
-    <button id="plLike" title="收藏"><i class="fa-regular fa-heart"></i></button>
-    <button id="plLyric" title="歌词"><i class="fa-solid fa-align-left"></i></button>
-    <button id="plDl" title="下载"><i class="fa-solid fa-download"></i></button>
+  <div class="pl-seek"><span id="plCur">00:00</span><input type="range" id="plSeek" min="0" max="100" value="0"><span id="plDur">00:00</span></div>
+  <div class="pl-row">
+    <img class="pl-cover" id="plCover" src="" alt="">
+    <div class="pl-info" id="plInfo">
+      <div class="pl-name" id="plName">选择歌曲开始播放</div>
+      <div class="pl-art" id="plArt">小源音乐</div>
+    </div>
+    <div class="pl-ctrl">
+      <button id="plMode" title="循环"><i class="fa-solid fa-repeat"></i></button>
+      <button id="plPrev"><i class="fa-solid fa-backward-step"></i></button>
+      <button class="pl-play" id="plPlay"><i class="fa-solid fa-play"></i></button>
+      <button id="plNext"><i class="fa-solid fa-forward-step"></i></button>
+      <button id="plLike" title="收藏"><i class="fa-regular fa-heart"></i></button>
+      <button id="plLyric" title="歌词"><i class="fa-solid fa-align-left"></i></button>
+      <button id="plDl" title="下载"><i class="fa-solid fa-download"></i></button>
+    </div>
   </div>
 </div>
 <!-- 歌词弹窗 -->
@@ -259,7 +263,7 @@ var currentTab='discover';
 function renderList(el,songs){if(!songs||!songs.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-music"></i><span class="et">暂无歌曲</span></div>';return}
 var d=sd[st.cur],sngs=songs,h='<div class="slist"><div class="sh"><span class="sh-n">#</span><span class="sh-t">歌曲</span><span class="sh-a">歌手</span><span class="sh-al">专辑</span></div>';
 h+=sngs.map(function(s,i){var n=s.name||'?',a=s.artist||'?',al=s.album||'?',cu=i===d.idx;
-return'<div class="srow'+(cu?' pl':'')+'" data-i="'+i+'"><span class="sx">'+(i+1)+'</span><img class="si2" src="'+(s.pic&&s.pic.startsWith('http')?s.pic+'?param=80y80':NC)+'" loading="lazy" onerror="this.src=\''+NC+'\'"><span class="sn">'+n+'</span><span class="sa">'+a+'</span><span class="sal">'+al+'</span><div class="sact"><span data-act="fav" title="收藏"><i class="fa-regular fa-heart"></i></span><span data-act="add" title="加入歌单"><i class="fa-solid fa-folder-plus"></i></span></div></div>'}).join('');
+return'<div class="srow'+(cu?' pl':'')+'" data-i="'+i+'"><span class="sx">'+(i+1)+'</span><img class="si2" src="'+(s.pic&&s.pic.startsWith('http')?s.pic+'?param=80y80':NC)+'" loading="lazy" onerror="this.src=\''+NC+'\'"><span class="sn">'+n+'<span class="sa-inline" style="color:var(--s1);font-weight:400"> — '+a+'</span></span><span class="sa">'+a+'</span><span class="sal">'+al+'</span><div class="sact"><span data-act="fav" title="收藏"><i class="fa-regular fa-heart"></i></span><span data-act="add" title="加入歌单"><i class="fa-solid fa-folder-plus"></i></span></div></div>'}).join('');
 el.innerHTML=h+'</div>';
 el.querySelectorAll('.srow').forEach(function(rw){rw.addEventListener('click',function(ev){var i=parseInt(this.dataset.i);
 if(ev.target.closest('[data-act="fav"]')){addFav(sngs[i]);ev.stopPropagation();return}
