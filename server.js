@@ -25,7 +25,7 @@ function lrc163(sid){
 // ── 搜索回退链：网易云搜索 → gdstudio代理 → 网易云suggest ──
 
 function search163(kw){
-  return get('https://music.163.com/api/search/get/web?csrf_token=&s='+encodeURIComponent(kw)+'&type=1&offset=0&total=true&limit=30',{},5000)
+  return get('https://music.163.com/api/search/get/web?csrf_token=&s='+encodeURIComponent(kw)+'&type=1&offset=0&total=true&limit=100',{},5000)
   .then(function(d){
     if(!d||!d.result) throw new Error('网易搜索返回空: '+(d.code||'unknown'));
     if(!d.result.songs||!d.result.songs.length) return[];
@@ -42,7 +42,7 @@ function searchGd(kw){
 }
 
 function searchSuggest(kw){
-  return get('https://music.163.com/api/search/suggest/web?csrf_token=&s='+encodeURIComponent(kw)+'&limit=30',{},6000)
+  return get('https://music.163.com/api/search/suggest/web?csrf_token=&s='+encodeURIComponent(kw)+'&limit=100',{},6000)
   .then(function(d){
     if(!d||!d.result) return[];
     var songs=(d.result.songs||[]).map(function(s){return{id:String(s.id),name:s.name,artist:(s.artists||s.ar||[]).map(function(x){return x.name}).join(' / '),album:(s.album||s.al||{}).name||'',pic:(s.album||s.al||{}).picUrl||''}})
