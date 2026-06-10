@@ -2,15 +2,9 @@
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#f5a623"/>
-      <stop offset="50%" style="stop-color:#e8873a"/>
       <stop offset="100%" style="stop-color:#e8613a"/>
     </linearGradient>
   </defs>
-  <!-- 圆角背景 -->
-  <rect rx="100" ry="100" width="512" height="512" fill="url(#bg)"/>
-  <!-- 装饰音符 -->
-  <text x="160" y="390" font-family="serif" font-size="200" fill="rgba(255,255,255,0.15)" transform="rotate(-15,160,390)">♪</text>
-  <text x="320" y="200" font-family="serif" font-size="140" fill="rgba(255,255,255,0.1)" transform="rotate(10,320,200)">♫</text>
-  <!-- 主音符 -->
-  <text x="256" y="310" font-family="serif" font-size="220" fill="white" text-anchor="middle" dominant-baseline="central" font-weight="bold">🎵</text>
+  <rect rx="110" ry="110" width="512" height="512" fill="url(#bg)"/>
+  <text x="256" y="280" font-size="260" fill="white" text-anchor="middle" dominant-baseline="central">🎵</text>
 </svg>
