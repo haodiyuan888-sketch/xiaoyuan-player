@@ -143,6 +143,10 @@ http.createServer(function(req,res){
   if(pt==='/'||pt==='/index.html'){serveFile(path.join(__dirname,'index.html'),{'Content-Type':'text/html; charset=utf-8'});return}
   // 静态资源图片
   if(pt==='/donate.png'){serveFile(path.join(__dirname,'donate.png'),{'Content-Type':'image/png','Cache-Control':'public, max-age=3600'});return}
+  if(pt==='/manifest.json'){serveFile(path.join(__dirname,'manifest.json'),{'Content-Type':'application/json'});return}
+  if(pt==='/sw.js'){serveFile(path.join(__dirname,'sw.js'),{'Content-Type':'application/javascript'});return}
+  if(pt==='/icon-192.png'){serveFile(path.join(__dirname,'icon-192.png'),{'Content-Type':'image/png'});return}
+  if(pt==='/icon-512.png'){serveFile(path.join(__dirname,'icon-512.png'),{'Content-Type':'image/png'});return}
 
   if(pt==='/ping'){
     var results={netease:{},gdstudio:{},suggest:{}};
