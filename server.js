@@ -147,6 +147,7 @@ http.createServer(function(req,res){
   if(pt==='/sw.js'){serveFile(path.join(__dirname,'sw.js'),{'Content-Type':'application/javascript'});return}
   if(pt==='/icon-192.png'){serveFile(path.join(__dirname,'icon-192.png'),{'Content-Type':'image/png'});return}
   if(pt==='/icon-512.png'){serveFile(path.join(__dirname,'icon-512.png'),{'Content-Type':'image/png'});return}
+  if(pt==='/icon.svg'){serveFile(path.join(__dirname,'icon.svg'),{'Content-Type':'image/svg+xml'});return}
 
   if(pt==='/ping'){
     var results={netease:{},gdstudio:{},suggest:{}};
