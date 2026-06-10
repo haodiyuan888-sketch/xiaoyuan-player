@@ -87,17 +87,29 @@ body{font-family:'Noto Sans SC',sans-serif;background:linear-gradient(170deg,#ff
 .em p{font-size:0.82rem}.em code{background:rgba(0,0,0,0.04);padding:1px 6px;border-radius:3px;font-size:0.78rem}
 .to{position:fixed;top:22px;left:50%;transform:translateX(-50%);background:#1e1e1e;color:#fff;padding:10px 22px;border-radius:50px;font-size:0.78rem;z-index:999;opacity:0;pointer-events:none;transition:opacity 0.3s;max-width:88vw;text-align:center}
 .to.show{opacity:1}
-/* ── 网易云风格歌词 ── */
+/* 网易云风格歌词 */
 .lrc-stage{position:relative;height:340px;overflow:hidden;mask-image:linear-gradient(to bottom,transparent 0%,#000 18%,#000 82%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 18%,#000 82%,transparent 100%)}
 .lrc-scroll{transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);padding:140px 0}
 .lrc-line{text-align:center;padding:8px 16px;font-size:0.9rem;color:#b0b0b0;transition:all 0.4s;line-height:2;word-break:break-word;cursor:default;min-height:2rem}
 .lrc-line.on{font-size:1.35rem;font-weight:700;color:#f0932b;text-shadow:0 2px 12px rgba(240,147,43,0.15)}
 .lrc-line.pre{color:#c8c8c8;font-size:0.93rem}
 .lrc-line.off{color:#d5d5d5;font-size:0.78rem}
-/* ── 下载按钮 ── */
+/* 下载按钮 */
 .cb.dl{background:rgba(240,147,43,0.12);color:#f0932b}
 .cb.dl:hover{background:rgba(240,147,43,0.22)}
 .cb.dl:active{transform:scale(0.92)}
+/* 打赏弹窗 */
+.dm{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.dm.show{opacity:1;pointer-events:all}
+.dm-in{background:var(--card);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:var(--r);padding:28px 24px 18px;text-align:center;max-width:320px;width:90vw;box-shadow:0 12px 50px rgba(0,0,0,0.15);transform:translateY(10px);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.dm.show .dm-in{transform:translateY(0)}
+.dm-in h3{font-size:1.05rem;font-weight:700;background:var(--gr);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.dm-in .dp{font-size:0.74rem;color:var(--sub);margin-bottom:14px}
+.dm-in img{display:block;max-width:220px;width:100%;margin:0 auto 8px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+.dm-in .dh{font-size:0.7rem;color:#c0c0c0}
+.dm-in .dc{display:inline-block;margin-top:12px;padding:8px 28px;border-radius:50px;background:var(--gr);color:#fff;font-size:0.8rem;font-weight:600;cursor:pointer;border:none;font-family:inherit}
+.dm-in .dc:active{transform:scale(0.96)}
+.c-donate{background:linear-gradient(135deg,#f9ca24,#f0932b)}
 .ld{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(255,250,245,0.5);z-index:998;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(2px)}
 .ld.show{opacity:1;pointer-events:all}
 .ld::after{content:'';width:38px;height:38px;border-radius:50%;border:3px solid #ffe0b2;border-top-color:#f0932b;animation:spin 0.7s linear infinite}
@@ -109,8 +121,6 @@ body{font-family:'Noto Sans SC',sans-serif;background:linear-gradient(170deg,#ff
 .cs-c:active{transform:translateY(-2px)}
 .cs-c .ci{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:#fff}
 .cs-c .cn{font-size:0.76rem;font-weight:600}.cs-c .cv{font-size:0.66rem;color:var(--sub);word-break:break-all}
-.ds .dq{display:block;max-width:240px;width:100%;margin:10px auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
-.ds .hint{font-size:0.72rem;color:var(--sub);margin-top:6px}
 .c-wx{background:linear-gradient(135deg,#07c160,#06ad56)}.c-em{background:linear-gradient(135deg,#ea4335,#fbbc05)}
 .c-gh{background:linear-gradient(135deg,#24292e,#4a5568)}.c-qq{background:linear-gradient(135deg,#12b7f5,#0d8bd9)}
 .ft{background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--br);border-radius:var(--r);text-align:center;padding:14px 16px;display:flex;flex-direction:column;gap:5px}
@@ -136,15 +146,15 @@ body{font-family:'Noto Sans SC',sans-serif;background:linear-gradient(170deg,#ff
 <div class="pb on" id="plist"><div class="em"><i class="fa-solid fa-music"></i><p>加载中...</p></div></div>
 <div class="pb" id="pfav"><div class="em"><i class="fa-solid fa-heart"></i><p>收藏列表为空</p></div></div>
 <div class="pb" id="plrc"><div class="lrc-stage"><div class="lrc-scroll" id="lrcB"><div class="em"><i class="fa-solid fa-microphone-lines"></i><p>播放时显示歌词</p></div></div></div></div></div>
-<div class="cs ds"><h2>☕ 欢迎打赏</h2><p class="sub">感谢您的支持，您的鼓励是我前进的动力</p>
-	<img class="dq" src="donate.png" alt="打赏二维码" loading="lazy">
-	<p class="hint">扫码打赏，金额随意</p></div>
-	<div class="cs"><h2>📬 联系我</h2><p class="sub">如有问题、建议或版权相关事宜，欢迎联系</p>
+<div class="cs"><h2>📬 联系我</h2><p class="sub">如有问题、建议或版权相关事宜，欢迎联系</p>
 <div class="cs-g"><div class="cs-c" data-cp="15516993901"><div class="ci c-wx"><i class="fa-brands fa-weixin"></i></div><span class="cn">微信</span><span class="cv">15516993901</span></div>
 <div class="cs-c" data-cp="haodiyuan888@gmail.com"><div class="ci c-em"><i class="fa-solid fa-envelope"></i></div><span class="cn">邮箱</span><span class="cv">haodiyuan888@gmail.com</span></div>
-<div class="cs-c" data-cp="1987161356"><div class="ci c-qq"><i class="fa-brands fa-qq"></i></div><span class="cn">QQ</span><span class="cv">1987161356</span></div></div></div>
+<div class="cs-c" data-cp="1987161356"><div class="ci c-qq"><i class="fa-brands fa-qq"></i></div><span class="cn">QQ</span><span class="cv">1987161356</span></div>
+<div class="cs-c" id="btnDonate"><div class="ci c-donate"><i class="fa-solid fa-mug-hot"></i></div><span class="cn">打赏</span><span class="cv">支持小源</span></div></div></div>
 <div class="ft"><p class="f1">🎵 <strong>小源音乐播放器</strong> — 由 <strong>小源</strong> 制作</p><p class="f2">本网页<strong>仅供娱乐</strong>，音乐资源来自网络<br>如有侵权内容，请联系我，将<strong>立即删除</strong>。</p><p class="f3">© 2026 XiaoYuan Music Player</p></div>
 </div>
+<!-- 打赏弹窗 -->
+<div class="dm" id="dm"><div class="dm-in"><h3>☕ 欢迎打赏</h3><p class="dp">感谢您的支持，您的鼓励是我前进的动力</p><img src="donate.png" alt="打赏二维码"><p class="dh">扫码打赏，金额随意</p><button class="dc" id="btnCloseDonate">关闭</button></div></div>
 <script>
 (function(){
 var A='';
@@ -193,7 +203,7 @@ function loadHot(){fetch(A+'/api/sources').then(function(r){return r.json()}).th
 function loadPl(pid){spin(true);fetch(A+'/api/playlist?source='+st.cur+'&id='+pid).then(function(r){return r.json()}).then(function(d){spin(false);if(d&&d.error){g('la').innerHTML='<div class="em"><i class="fa-solid fa-triangle-exclamation"></i><p>'+d.error+'</p></div>';toast(d.error)}else if(d&&d.length){var sdx=sd[st.cur];sdx.songs=d;g('la').innerHTML='';rl(g('la'),d,true);toast(SK[st.cur].n+' '+d.length+' 首')}else{g('la').innerHTML='<div class="em"><p>暂无歌曲</p></div>'}}).catch(function(){spin(false);g('la').innerHTML='<div class="em"><i class="fa-solid fa-plug"></i><p>服务器未连接</p></div>';toast('加载失败')})}
 function swT(tab){document.querySelectorAll('.pt button').forEach(function(b){b.classList.remove('on')});document.querySelectorAll('.pb').forEach(function(p){p.classList.remove('on')});var b=document.querySelector('.pt button[data-tab="'+tab+'"]');if(b)b.classList.add('on');var p=g('p'+tab);if(p)p.classList.add('on')}
 g('bplay').addEventListener('click',tp);g('bpv').addEventListener('click',prv);g('bnx').addEventListener('click',nxt);
-	g('bdl').addEventListener('click',function(){var d=sd[st.cur];if(d.idx<0||!d.songs[d.idx]){toast('请先播放歌曲');return}var s=d.songs[d.idx],sid=s.id||'';if(!sid){toast('歌曲ID无效');return}var url=A+'/api/download?source='+st.cur+'&id='+sid+'&name='+encodeURIComponent((s.name||'song')+' - '+(s.artist||'unknown'));var a=document.createElement('a');a.href=url;a.download='';a.style.display='none';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('开始下载: '+(s.name||'song'))});
+g('bdl').addEventListener('click',function(){var d=sd[st.cur];if(d.idx<0||!d.songs[d.idx]){toast('请先播放歌曲');return}var s=d.songs[d.idx],sid=s.id||'';if(!sid){toast('歌曲ID无效');return}var url=A+'/api/download?source='+st.cur+'&id='+sid+'&name='+encodeURIComponent((s.name||'song')+' - '+(s.artist||'unknown'));var a=document.createElement('a');a.href=url;a.download='';a.style.display='none';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('开始下载: '+(s.name||'song'))});
 g('bm').addEventListener('click',function(){if(st.mode==='repeat'){st.mode='repeat-one';this.innerHTML='<i class="fa-solid fa-repeat"></i><sup>1</sup>'}else if(st.mode==='repeat-one'){st.mode='shuffle';this.innerHTML='<i class="fa-solid fa-shuffle"></i>'}else{st.mode='repeat';this.innerHTML='<i class="fa-solid fa-repeat"></i>'}this.classList.add('on')});
 g('pb').addEventListener('input',function(){if(audio.duration)audio.currentTime=(this.value/100)*audio.duration});
 g('vs').addEventListener('input',function(){st.vol=this.value/100;audio.volume=st.vol;this.style.setProperty('--vl',this.value+'%');try{localStorage.setItem('xym_vol',this.value)}catch(e){}});
@@ -208,7 +218,12 @@ audio.addEventListener('ended',function(){if(st.mode==='repeat-one'){audio.curre
 audio.addEventListener('error',function(){spin(false);nxt()});
 audio.addEventListener('play',function(){st.play=true;upBtn()});
 audio.addEventListener('pause',function(){st.play=false;upBtn()});
-document.querySelectorAll('.cs-c').forEach(function(c){c.addEventListener('click',function(){var cp=this.dataset.cp,hr=this.dataset.href;if(hr){window.open(hr,'_blank');return}if(cp&&navigator.clipboard){navigator.clipboard.writeText(cp).then(function(){toast('已复制: '+cp)}).catch(function(){toast('复制失败')})}})});
+// 联系我卡片：复制联系方式
+document.querySelectorAll('.cs-c').forEach(function(c){c.addEventListener('click',function(){var cp=this.dataset.cp,hr=this.dataset.href;if(this.id==='btnDonate')return;if(hr){window.open(hr,'_blank');return}if(cp&&navigator.clipboard){navigator.clipboard.writeText(cp).then(function(){toast('已复制: '+cp)}).catch(function(){toast('复制失败')})}})});
+// 打赏弹窗
+g('btnDonate').addEventListener('click',function(){g('dm').classList.add('show')});
+g('btnCloseDonate').addEventListener('click',function(){g('dm').classList.remove('show')});
+g('dm').addEventListener('click',function(e){if(e.target===this)g('dm').classList.remove('show')});
 (function init(){try{var v=localStorage.getItem('xym_vol');if(v){st.vol=parseInt(v)/100;audio.volume=st.vol;g('vs').value=v;g('vs').style.setProperty('--vl',v+'%')}else{g('vs').style.setProperty('--vl','70%')}}catch(e){}try{var c=localStorage.getItem('xym_cur');if(c&&SK[c])st.cur=c}catch(e){}g('cv').src=NC;loadFavs();renderFavs();renderTabs();loadHot()})();
 })();
 </script>
