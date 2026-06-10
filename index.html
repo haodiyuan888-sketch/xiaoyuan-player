@@ -109,6 +109,8 @@ body{font-family:'Noto Sans SC',sans-serif;background:linear-gradient(170deg,#ff
 .cs-c:active{transform:translateY(-2px)}
 .cs-c .ci{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:#fff}
 .cs-c .cn{font-size:0.76rem;font-weight:600}.cs-c .cv{font-size:0.66rem;color:var(--sub);word-break:break-all}
+.ds .dq{display:block;max-width:240px;width:100%;margin:10px auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.ds .hint{font-size:0.72rem;color:var(--sub);margin-top:6px}
 .c-wx{background:linear-gradient(135deg,#07c160,#06ad56)}.c-em{background:linear-gradient(135deg,#ea4335,#fbbc05)}
 .c-gh{background:linear-gradient(135deg,#24292e,#4a5568)}.c-qq{background:linear-gradient(135deg,#12b7f5,#0d8bd9)}
 .ft{background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--br);border-radius:var(--r);text-align:center;padding:14px 16px;display:flex;flex-direction:column;gap:5px}
@@ -122,7 +124,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:linear-gradient(170deg,#ff
 <body>
 <div class="ld" id="ld"></div><div class="to" id="to"></div>
 <div class="c">
-<div class="hd"><span class="hi">☀️</span><h1>小源音乐</h1><p>7个独立音源 · 各自运行 · 互不干扰</p></div>
+<div class="hd"><span class="hi">🎵</span><h1>小源音乐</h1><p></p></div>
 <div class="sr" id="sr"></div>
 <div class="si-bar" id="sib"></div>
 <div class="sb"><input type="search" id="si" placeholder="搜索当前音源..." autocomplete="off" enterkeyhint="search"><button id="sbtn"><i class="fa-solid fa-magnifying-glass"></i></button></div>
@@ -134,11 +136,14 @@ body{font-family:'Noto Sans SC',sans-serif;background:linear-gradient(170deg,#ff
 <div class="pb on" id="plist"><div class="em"><i class="fa-solid fa-music"></i><p>加载中...</p></div></div>
 <div class="pb" id="pfav"><div class="em"><i class="fa-solid fa-heart"></i><p>收藏列表为空</p></div></div>
 <div class="pb" id="plrc"><div class="lrc-stage"><div class="lrc-scroll" id="lrcB"><div class="em"><i class="fa-solid fa-microphone-lines"></i><p>播放时显示歌词</p></div></div></div></div></div>
-<div class="cs"><h2>📬 联系我</h2><p class="sub">如有问题、建议或版权相关事宜，欢迎联系</p>
+<div class="cs ds"><h2>☕ 欢迎打赏</h2><p class="sub">感谢您的支持，您的鼓励是我前进的动力</p>
+	<img class="dq" src="donate.png" alt="打赏二维码" loading="lazy">
+	<p class="hint">扫码打赏，金额随意</p></div>
+	<div class="cs"><h2>📬 联系我</h2><p class="sub">如有问题、建议或版权相关事宜，欢迎联系</p>
 <div class="cs-g"><div class="cs-c" data-cp="15516993901"><div class="ci c-wx"><i class="fa-brands fa-weixin"></i></div><span class="cn">微信</span><span class="cv">15516993901</span></div>
 <div class="cs-c" data-cp="haodiyuan888@gmail.com"><div class="ci c-em"><i class="fa-solid fa-envelope"></i></div><span class="cn">邮箱</span><span class="cv">haodiyuan888@gmail.com</span></div>
 <div class="cs-c" data-cp="1987161356"><div class="ci c-qq"><i class="fa-brands fa-qq"></i></div><span class="cn">QQ</span><span class="cv">1987161356</span></div></div></div>
-<div class="ft"><p class="f1">🎵 <strong>小源音乐播放器</strong> — 由 <strong>小源</strong> 制作</p><p class="f2">本网页<strong>仅供娱乐</strong>，音乐资源来自互联网开放接口<br>如有侵权内容，请联系我，将<strong>立即删除</strong>。</p><p class="f3">© 2026 XiaoYuan Music Player</p></div>
+<div class="ft"><p class="f1">🎵 <strong>小源音乐播放器</strong> — 由 <strong>小源</strong> 制作</p><p class="f2">本网页<strong>仅供娱乐</strong>，音乐资源来自网络<br>如有侵权内容，请联系我，将<strong>立即删除</strong>。</p><p class="f3">© 2026 XiaoYuan Music Player</p></div>
 </div>
 <script>
 (function(){
