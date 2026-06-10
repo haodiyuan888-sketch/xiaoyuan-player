@@ -142,7 +142,7 @@ http.createServer(function(req,res){
 
   if(pt==='/'||pt==='/index.html'){serveFile(path.join(__dirname,'index.html'),{'Content-Type':'text/html; charset=utf-8'});return}
   // 静态资源图片
-  if(pt==='/donate.png'){serveFile(path.join(__dirname,'donate.png'),{'Content-Type':'image/png','Cache-Control':'public, max-age=86400'});return}
+  if(pt==='/donate.png'){serveFile(path.join(__dirname,'donate.png'),{'Content-Type':'image/png','Cache-Control':'public, max-age=3600'});return}
 
   if(pt==='/ping'){
     var results={netease:{},gdstudio:{},suggest:{}};
