@@ -1,0 +1,18 @@
+{
+  "name": "xiaoyuan-player",
+  "version": "1.0.0",
+  "description": "小源音乐播放器 - 统一聚合 sources 目录中的音乐源",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "music",
+    "player"
+  ],
+  "license": "MIT"
+}

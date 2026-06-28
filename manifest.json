@@ -1,0 +1,31 @@
+{
+  "name": "小源音乐",
+  "short_name": "小源音乐",
+  "description": "小源音乐播放器 - 在线音乐搜索与播放",
+  "id": "xiaoyuan-player",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "categories": ["music", "entertainment"],
+  "background_color": "#faf7f2",
+  "theme_color": "#e8873a",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
