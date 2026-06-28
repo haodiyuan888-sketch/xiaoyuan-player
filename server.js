@@ -494,18 +494,7 @@ async function handleApi(req, res, pathname, query) {
           cdnUrl = fixHttpUrl(await gdUrl(songId, q).catch(() => ''));
           if (cdnUrl && cdnUrl.startsWith('http')) break;
         }
-        // GD 全部失败，用 LX Music API 兜底
-        if (!cdnUrl) {
-          try {
-            const lxData = await getJson(`https://lxmusicapi.onrender.com/url/wy/${encodeURIComponent(songId)}/320k`, {
-              headers: { 'X-Request-Key': 'share-v3' },
-              timeout: 5000,
-            });
-            cdnUrl = extractUrl(lxData);
-          } catch {}
-        }
-        // LX API 也失败，用网易云直连最后兜底
-        if (!cdnUrl) cdnUrl = `https://music.163.com/song/media/outer/url?id=${encodeURIComponent(songId)}.mp3`;
+        // GD API 失败则返回404，不降级到其他源
         if (cdnUrl && cdnUrl.startsWith('http')) {
           res.writeHead(302, { ...CORS, Location: cdnUrl });
           res.end();
@@ -549,15 +538,6 @@ async function handleApi(req, res, pathname, query) {
           cdnUrl = fixHttpUrl(await gdUrl(id, q).catch(() => ''));
           if (cdnUrl && cdnUrl.startsWith('http')) break;
         }
-        if (!cdnUrl) {
-          try {
-            const lxData = await getJson(`https://lxmusicapi.onrender.com/url/wy/${encodeURIComponent(id)}/320k`, {
-              headers: { 'X-Request-Key': 'share-v3' }, timeout: 5000,
-            });
-            cdnUrl = extractUrl(lxData);
-          } catch {}
-        }
-        if (!cdnUrl) cdnUrl = `https://music.163.com/song/media/outer/url?id=${encodeURIComponent(id)}.mp3`;
         if (cdnUrl && cdnUrl.startsWith('http')) {
           const origWriteHead = res.writeHead.bind(res);
           res.writeHead = function (code, headers) {
