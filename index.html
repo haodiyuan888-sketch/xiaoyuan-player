@@ -370,45 +370,82 @@
     [data-lyric-theme="12"] .lyric-bg { background: linear-gradient(180deg, #141e30 0%, #243b55 50%, #141e30 100%); }
     [data-lyric-theme="13"] .lyric-bg { background: linear-gradient(180deg, #3e2723 0%, #4e342e 40%, #3e2723 100%); }
     [data-lyric-theme="14"] .lyric-bg { background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 40%, #ffecd2 100%); }
-    /* 樱花瓣：樱花粉渐变 + 黑胶唱片特效 */
-    [data-lyric-theme="15"] .lyric-bg { background: linear-gradient(180deg, #ffe0ec 0%, #ffb7c5 25%, #f8a4c8 50%, #e8b4d8 75%, #ffc8d6 100%); }
+    /* 樱花瓣：樱花粉渐变 + 黑胶唱片 + 飘落花瓣 */
+    [data-lyric-theme="15"] .lyric-bg {
+      background: linear-gradient(180deg, #fce4ec 0%, #f8bbd0 15%, #f48fb1 35%, #f8bbd0 55%, #e8b4d8 75%, #fce4ec 100%);
+    }
     [data-lyric-theme="15"] .lyric-bg::before {
       content: ''; position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse at 20% 15%, rgba(255,182,193,.35) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 25%, rgba(255,154,180,.25) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 60%, rgba(255,218,228,.3) 0%, transparent 55%),
-        radial-gradient(ellipse at 30% 80%, rgba(232,180,216,.2) 0%, transparent 40%),
-        radial-gradient(ellipse at 70% 70%, rgba(255,192,210,.25) 0%, transparent 50%);
+        radial-gradient(ellipse at 15% 10%, rgba(255,220,230,.45) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 20%, rgba(255,180,200,.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 45% 55%, rgba(255,200,215,.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 25% 75%, rgba(240,180,210,.25) 0%, transparent 45%),
+        radial-gradient(ellipse at 75% 65%, rgba(255,210,225,.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 35%, rgba(255,240,245,.5) 0%, transparent 70%);
+      animation: petal-shift 12s ease-in-out infinite;
+    }
+    @keyframes petal-shift {
+      0%, 100% { opacity: .85; }
+      50% { opacity: 1; }
+    }
+    /* 飘落花瓣容器 */
+    .sakura-petals {
+      display: none;
+      position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+    }
+    .sakura-petal {
+      position: absolute;
+      width: 14px; height: 14px;
+      background: radial-gradient(circle at 30% 30%, #ffccd5, #f48fb1);
+      border-radius: 50% 0 50% 0;
+      opacity: 0;
+      animation: petal-fall linear infinite;
+    }
+    .sakura-petal:nth-child(1) { left: 10%; animation-duration: 9s; animation-delay: 0s; }
+    .sakura-petal:nth-child(2) { left: 25%; animation-duration: 11s; animation-delay: -2s; width: 10px; height: 10px; }
+    .sakura-petal:nth-child(3) { left: 40%; animation-duration: 13s; animation-delay: -4s; width: 16px; height: 16px; }
+    .sakura-petal:nth-child(4) { left: 55%; animation-duration: 10s; animation-delay: -6s; width: 11px; height: 11px; }
+    .sakura-petal:nth-child(5) { left: 70%; animation-duration: 12s; animation-delay: -1s; }
+    .sakura-petal:nth-child(6) { left: 85%; animation-duration: 14s; animation-delay: -3s; width: 13px; height: 13px; }
+    .sakura-petal:nth-child(7) { left: 15%; animation-duration: 10.5s; animation-delay: -5s; width: 9px; height: 9px; }
+    .sakura-petal:nth-child(8) { left: 60%; animation-duration: 11.5s; animation-delay: -7s; width: 15px; height: 15px; }
+    @keyframes petal-fall {
+      0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0; }
+      5% { opacity: .7; }
+      50% { opacity: .5; transform: translateY(55vh) rotate(180deg) translateX(40px); }
+      90% { opacity: .1; }
+      100% { transform: translateY(105vh) rotate(360deg) translateX(-30px); opacity: 0; }
     }
     /* 黑胶唱片 */
     .vinyl-record {
       display: none;
       position: absolute;
-      top: 18%;
+      top: 16%;
       left: 50%;
       transform: translateX(-50%);
-      width: min(220px, 38vw);
-      height: min(220px, 38vw);
+      width: min(240px, 40vw);
+      height: min(240px, 40vw);
       border-radius: 50%;
       z-index: 0;
       pointer-events: none;
-      opacity: .55;
+      opacity: .6;
       background: radial-gradient(circle at center,
-        #333 0%, #333 10%,
-        #ff6b8a 10.5%, #ff6b8a 12%,
-        #222 12.5%, #222 18%,
-        #2a2a2a 18.5%, #2a2a2a 28%,
-        #333 28.5%, #333 37%,
-        #2a2a2a 37.5%, #2a2a2a 47%,
-        #333 47.5%, #333 56%,
-        #2a2a2a 56.5%, #2a2a2a 66%,
-        #1a1a1a 66.5%, #1a1a1a 100%
+        #2a2a2a 0%, #2a2a2a 9%,
+        #ff7b9c 9.5%, #ff7b9c 11%,
+        #1a1a1a 11.5%, #1a1a1a 17%,
+        #252525 17.5%, #252525 26%,
+        #1f1f1f 26.5%, #1f1f1f 34%,
+        #2a2a2a 34.5%, #2a2a2a 43%,
+        #1f1f1f 43.5%, #1f1f1f 51%,
+        #2a2a2a 51.5%, #2a2a2a 60%,
+        #1a1a1a 60.5%, #1a1a1a 100%
       );
       box-shadow:
-        0 0 40px rgba(255,140,170,.25),
-        0 0 80px rgba(255,160,180,.15),
-        0 20px 50px rgba(0,0,0,.2);
+        0 0 50px rgba(255,150,180,.3),
+        0 0 100px rgba(255,170,195,.2),
+        0 0 150px rgba(255,130,165,.12),
+        0 25px 60px rgba(0,0,0,.25);
       animation: vinyl-spin 8s linear infinite;
     }
     .vinyl-record.paused { animation-play-state: paused; }
@@ -417,21 +454,57 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 22%;
-      height: 22%;
+      width: 20%;
+      height: 20%;
       border-radius: 50%;
-      background: radial-gradient(circle, #ffc8d6 0%, #ff8fab 40%, #e05780 100%);
-      box-shadow: 0 0 15px rgba(255,140,170,.5), inset 0 2px 4px rgba(255,255,255,.3);
+      background: radial-gradient(circle at 35% 35%, #fff, #ffccd5 30%, #ff8fab 65%, #d4607a 100%);
+      box-shadow:
+        0 0 20px rgba(255,150,175,.6),
+        0 0 40px rgba(255,120,155,.3),
+        inset 0 1px 2px rgba(255,255,255,.4);
+    }
+    .vinyl-record::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: 0 0 30px rgba(255,180,200,.15), 0 0 60px rgba(255,150,180,.1);
+      animation: vinyl-glow 3s ease-in-out infinite;
     }
     @keyframes vinyl-spin {
       from { transform: translateX(-50%) rotate(0deg); }
       to { transform: translateX(-50%) rotate(360deg); }
     }
-    /* 唱片在浅色歌词文字时调整透明度 */
-    [data-lyric-theme="15"] .lyric-body { color: rgba(60,20,30,.5); }
-    [data-lyric-theme="15"] .lyric-line.active { color: #c0395c; text-shadow: 0 0 20px rgba(192,57,92,.2); }
-    [data-lyric-theme="15"] .lyric-songname { color: #5c1a30; text-shadow: 0 2px 10px rgba(192,57,92,.2); }
+    @keyframes vinyl-glow {
+      0%, 100% { box-shadow: 0 0 30px rgba(255,180,200,.15), 0 0 60px rgba(255,150,180,.1); }
+      50% { box-shadow: 0 0 45px rgba(255,180,200,.25), 0 0 80px rgba(255,150,180,.18); }
+    }
+    /* 樱花瓣主题的歌词样式 */
+    [data-lyric-theme="15"] .lyric-body { color: rgba(70,25,35,.45); }
+    [data-lyric-theme="15"] .lyric-line.active {
+      color: #b84460;
+      text-shadow: 0 0 24px rgba(184,68,96,.25), 0 2px 4px rgba(184,68,96,.1);
+    }
+    [data-lyric-theme="15"] .lyric-songname { color: #4a1a2a; text-shadow: 0 2px 12px rgba(180,70,90,.25); }
     [data-lyric-theme="15"] .lyric-artist { color: rgba(90,30,50,.5); }
+    [data-lyric-theme="15"] .lyric-seek { color: rgba(100,40,55,.5); }
+    [data-lyric-theme="15"] .lyric-seek input { accent-color: #d4687c; }
+    [data-lyric-theme="15"] .lyric-controls .icon-btn {
+      border-color: rgba(180,100,120,.2);
+      background: rgba(255,200,215,.2);
+      color: rgba(80,30,40,.7);
+    }
+    [data-lyric-theme="15"] .lyric-controls .play-btn {
+      background: linear-gradient(135deg, #f48fb1, #e8738a);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(220,100,130,.35);
+    }
+    [data-lyric-theme="15"] .lyric-close, [data-lyric-theme="15"] .lyric-theme-btn {
+      border-color: rgba(180,100,120,.2);
+      background: rgba(255,200,215,.25);
+      color: rgba(80,30,40,.7);
+    }
     .lyric-theme-btn {
       position: absolute;
       top: max(14px, env(safe-area-inset-top));
@@ -941,7 +1014,7 @@
     .tab { color: #9196a1; font-size: 15px; }
     .tab.active { color: #fff; }
     .tab.active::after { background: var(--desk-accent); }
-    .home-hero { position: relative; display: flex; min-height: 235px; margin-bottom: 29px; padding: 31px 42px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 20px; background: linear-gradient(112deg, #201b2b, #281f2e 44%, #181b28); }
+    .home-hero { position: relative; display: flex; min-height: 235px; margin: 28px 0 29px; padding: 31px 42px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 20px; background: linear-gradient(112deg, #201b2b, #281f2e 44%, #181b28); }
     .home-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 50%, rgba(255,255,255,.04)); pointer-events: none; }
     .hero-copy { position: relative; z-index: 1; }
     .hero-kicker { color: #ff99a5; font-size: 12px; letter-spacing: .18em; }
@@ -1115,7 +1188,7 @@
       .quick-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .hero-art { right: -20px; width: 210px; height: 210px; top: -25px; }
       .hero-copy h1 { font-size: clamp(22px, 3vw, 30px); }
-      .home-hero { min-height: 200px; padding: 24px 28px; }
+      .home-hero { min-height: 200px; padding: 24px 28px; margin: 22px 0 24px; }
       .page-header { padding: 18px 20px; }
       .library-grid { grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 10px; }
       .plist-grid { grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 12px; }
@@ -1154,7 +1227,7 @@
       .tabs { margin: 14px 0; gap: 16px; }
       .tab { font-size: 14px; padding: 4px 0 6px; }
       /* Hero 区域 */
-      .home-hero { min-height: 180px; padding: 22px 18px; border-radius: 14px; margin-bottom: 20px; }
+      .home-hero { min-height: 180px; padding: 22px 18px; border-radius: 14px; margin: 18px 0 20px; }
       .hero-kicker { font-size: 10px; }
       .hero-copy h1 { font-size: 22px; margin: 6px 0; }
       .hero-copy p { max-width: 160px; font-size: 11px; }
@@ -1240,7 +1313,10 @@
       .fav-header strong { font-size: 15px !important; }
       .settings-grid { grid-template-columns: 1fr; gap: 10px; }
       .setting-group { padding: 14px; }
-      .vinyl-record { width: min(150px, 30vw); height: min(150px, 30vw); top: 22%; }
+      .vinyl-record { width: min(160px, 32vw); height: min(160px, 32vw); top: 20%; }
+      .sakura-petal { width: 10px !important; height: 10px !important; }
+      .sakura-petal:nth-child(3) { width: 12px !important; height: 12px !important; }
+      .sakura-petal:nth-child(8) { width: 11px !important; height: 11px !important; }
     }
 
     /* ---- 小屏手机 (≤ 380px)：超紧凑 ---- */
@@ -1309,7 +1385,7 @@
     .tab { color: var(--pastel-muted); }
     .tab.active { color: var(--pastel-ink); }
     .tab.active::after { background: var(--pastel-accent); }
-    .home-hero { border-color: rgba(255,255,255,.8); background: linear-gradient(118deg, rgba(255,255,255,.86), rgba(255,226,214,.64) 45%, rgba(221,234,255,.76)); box-shadow: 0 18px 44px rgba(94,119,158,.14); }
+    .home-hero { border-color: rgba(255,255,255,.8); background: linear-gradient(118deg, rgba(255,255,255,.86), rgba(255,226,214,.64) 45%, rgba(221,234,255,.76)); box-shadow: 0 18px 44px rgba(94,119,158,.14); margin-top: 28px; }
     .home-hero::after { background: linear-gradient(90deg, transparent 50%, rgba(255,255,255,.26)); }
     .hero-kicker { color: var(--pastel-accent); }
     .hero-copy h1 { color: var(--pastel-ink); }
@@ -1356,11 +1432,8 @@
     <div class="side-brand"><span class="brand-dot"></span>小源音乐</div>
     <nav class="side-nav" id="sideNav">
       <button class="side-link active" data-page="home"><span>⌂</span>首页</button>
-      <button class="side-link" data-page="library"><span>♫</span>音乐库</button>
       <button class="side-link" data-page="charts"><span>♛</span>排行榜</button>
-      <button class="side-link" data-page="playlists"><span>▤</span>歌单</button>
       <button class="side-link" data-page="favorite"><span>♡</span>收藏</button>
-      <button class="side-link" data-page="downloads"><span>⇩</span>下载</button>
       <button class="side-link" data-page="history"><span>◷</span>历史播放</button>
     </nav>
     <div class="side-footer"><button class="side-link" data-page="settings"><span>⚙</span>设置</button><small></small></div>
@@ -1419,6 +1492,12 @@
     <div class="lyric-fullscreen">
       <div class="lyric-bg"></div>
       <div class="vinyl-record" id="vinylRecord"></div>
+      <div class="sakura-petals" id="sakuraPetals">
+        <div class="sakura-petal"></div><div class="sakura-petal"></div>
+        <div class="sakura-petal"></div><div class="sakura-petal"></div>
+        <div class="sakura-petal"></div><div class="sakura-petal"></div>
+        <div class="sakura-petal"></div><div class="sakura-petal"></div>
+      </div>
       <button class="lyric-close" id="lyricClose"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button>
       <button class="lyric-theme-btn" id="lyricThemeBtn" title="切换背景">🎨</button>
       <div class="lyric-theme-panel" id="lyricThemePanel"></div>
@@ -2610,18 +2689,22 @@
         { name: '星空蓝', color: '#141e30' }, { name: '暖棕', color: '#3e2723' },
         { name: '水蜜桃', color: '#ffecd2' }, { name: '樱花瓣', color: '#ffb7c5' }
       ];
-      var lyricTheme = parseInt(load('xym_lyric_theme')) || 0;
+      var lyricTheme = parseInt(load('xym_lyric_theme'));
+      if (isNaN(lyricTheme)) lyricTheme = 15; // 默认樱花瓣主题
       var lyricFullscreen = document.querySelector('.lyric-fullscreen');
 
       var vinylRecord = document.getElementById('vinylRecord');
+      var sakuraPetals = document.getElementById('sakuraPetals');
       function applyLyricTheme(idx) {
         lyricTheme = idx;
         lyricFullscreen.setAttribute('data-lyric-theme', idx);
         save('xym_lyric_theme', idx);
         var items = $('lyricThemePanel').querySelectorAll('.lyric-theme-item');
         items.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
-        // 黑胶唱片仅在樱花瓣主题显示
-        vinylRecord.style.display = idx === 15 ? '' : 'none';
+        // 黑胶唱片和花瓣仅在樱花瓣主题显示
+        var isSakura = idx === 15;
+        vinylRecord.style.display = isSakura ? '' : 'none';
+        sakuraPetals.style.display = isSakura ? '' : 'none';
         updateVinylState();
       }
 
