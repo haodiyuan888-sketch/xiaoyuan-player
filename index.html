@@ -1295,12 +1295,11 @@
   <main class="app">
     <div class="top">
       <div class="brand"><span>发现音乐</span></div>
-      <div class="top-actions">s
+      <div class="top-actions">
         <form class="search" id="searchForm">
           <input id="keyword" type="search" autocomplete="off" enterkeyhint="search" placeholder="搜索歌曲、歌手或关键词" aria-label="搜索歌曲、歌手或关键词">
           <button class="btn" type="submit">搜索</button>
         </form>
-        <button class="install-btn" id="installBtn" type="button" title="安装为桌面应用">安装</button>
       </div>
     </div>
 
@@ -1837,10 +1836,9 @@
         updateLyricPlayBtn();
         updateVinylState();
       }
+      var vinylRecord = document.getElementById('vinylRecord');
       function updateVinylState() {
-        if (vinylRecord && vinylRecord.style.display !== 'none') {
-          vinylRecord.classList.toggle('paused', audio.paused);
-        }
+        if (vinylRecord) vinylRecord.classList.toggle('paused', audio.paused);
       }
 
       function updateRowPlayBtn(row, isPlaying) {
@@ -2530,69 +2528,6 @@
       $('lyricOverlay').addEventListener('click', function (e) {
         if (e.target === $('lyricOverlay')) hideLyric();
       });
-      // 歌词页主题色选择器
-      var lyricThemes = [
-        { name: '深蓝紫', color: '#1a1a2e' }, { name: '樱花粉', color: '#ff9a9e' },
-        { name: '暖橙', color: '#ff7e5f' }, { name: '浅蓝', color: '#a1c4fd' },
-        { name: '天空', color: '#4facfe' }, { name: '紫罗兰', color: '#667eea' },
-        { name: '墨绿', color: '#134e4a' }, { name: '日落', color: '#ff512f' },
-        { name: '海洋', color: '#2193b0' }, { name: '薰衣草', color: '#b8cbb8' },
-        { name: '玫瑰金', color: '#e0a7b2' }, { name: '深夜', color: '#0f0c29' },
-        { name: '星空蓝', color: '#141e30' }, { name: '暖棕', color: '#3e2723' },
-        { name: '水蜜桃', color: '#ffecd2' }, { name: '樱花瓣', color: '#ffb7c5' }
-      ];
-      var lyricTheme = parseInt(load('xym_lyric_theme'));
-      if (isNaN(lyricTheme) || lyricTheme === 0) lyricTheme = 15; // 默认樱花瓣主题
-      var lyricFullscreen = document.querySelector('.lyric-fullscreen');
-
-      var vinylRecord = document.getElementById('vinylRecord');
-      var sakuraPetals = document.getElementById('sakuraPetals');
-      function applyLyricTheme(idx) {
-        lyricTheme = idx;
-        lyricFullscreen.setAttribute('data-lyric-theme', idx);
-        save('xym_lyric_theme', idx);
-        var items = $('lyricThemePanel').querySelectorAll('.lyric-theme-item');
-        items.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
-        // 黑胶唱片和花瓣仅在樱花瓣主题显示
-        var isSakura = idx === 15;
-        vinylRecord.style.display = isSakura ? '' : 'none';
-        sakuraPetals.style.display = isSakura ? '' : 'none';
-        updateVinylState();
-      }
-
-      // 生成颜色面板
-      $('lyricThemePanel').innerHTML = lyricThemes.map(function (t, i) {
-        return '<button class="lyric-theme-item' + (i === lyricTheme ? ' active' : '') + '" data-idx="' + i + '">' +
-          '<span class="lyric-theme-swatch" style="background:' + t.color + '"></span>' + t.name + '</button>';
-      }).join('');
-      applyLyricTheme(lyricTheme);
-
-      // 折叠面板
-      $('lyricThemeBtn').addEventListener('click', function (e) {
-        e.stopPropagation();
-        var panel = $('lyricThemePanel');
-        panel.classList.toggle('show');
-        $('lyricThemeBtn').classList.toggle('open', panel.classList.contains('show'));
-      });
-
-      $('lyricThemePanel').addEventListener('click', function (e) {
-        var item = e.target.closest('.lyric-theme-item');
-        if (item) {
-          applyLyricTheme(parseInt(item.dataset.idx));
-          $('lyricThemePanel').classList.remove('show');
-          $('lyricThemeBtn').classList.remove('open');
-        }
-      });
-
-      // 点击页面其他地方关闭面板
-      document.addEventListener('click', function (e) {
-        if (!$('lyricThemePanel').classList.contains('show')) return;
-        if (!e.target.closest('#lyricThemePanel') && !e.target.closest('#lyricThemeBtn')) {
-          $('lyricThemePanel').classList.remove('show');
-          $('lyricThemeBtn').classList.remove('open');
-        }
-      }, true);
-
       // 歌词页控制按钮
       $('lyricPrev').addEventListener('click', function () { prev(); });
       $('lyricPlay').addEventListener('click', function () { togglePlay(); updateLyricPlayBtn(); });
