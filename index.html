@@ -1285,8 +1285,8 @@
   <aside class="sidebar" aria-label="主导航">
     <div class="side-brand"><span class="brand-dot"></span>小源音乐</div>
     <nav class="side-nav" id="sideNav">
-      <button class="side-link active" data-page="home"><span>🏠</span>首页</button>
-      <button class="side-link" data-page="charts"><span>👑</span>排行榜</button>
+      <button class="side-link active" data-page="charts"><span>👑</span>栏目</button>
+      <button class="side-link" data-page="home"><span>🏠</span>板块</button>
       <button class="side-link" data-page="favorite"><span>❤</span>收藏</button>
       <button class="side-link" data-page="history"><span>◷</span>历史播放</button>
     </nav>
@@ -1310,13 +1310,13 @@
       <button class="tab" data-view="recent">最近播放</button>
     </nav>
 
-    <section class="home-hero" id="homeHero">
+    <section class="home-hero" id="homeHero" hidden>
       <div class="hero-copy"><span class="hero-kicker">本周精选</span><h1>让每一次播放<br>都有新的发现</h1><p>来自你原有音乐源的热门作品与新鲜推荐。</p><button class="hero-play" id="heroPlay" type="button">▶ 随机播放</button></div>
       <div class="hero-art"><div class="hero-disc"></div><div class="hero-note">♪</div></div>
       <div class="hero-dots"><i class="active"></i><i></i><i></i></div>
     </section>
 
-    <section class="quick-section" id="quickSection"><div class="section-title"><h2>为你推荐</h2><span>快速播放</span></div><div class="quick-grid" id="quickGrid"></div></section>
+    <section class="quick-section" id="quickSection" hidden><div class="section-title"><h2>为你推荐</h2><span>快速播放</span></div><div class="quick-grid" id="quickGrid"></div></section>
 
     <nav class="subtabs" id="subtabs">
       <button class="subtab active" data-cat="0">热歌榜</button>
@@ -1429,7 +1429,7 @@
         sleepTimer: null,
         resume: load('xym_resume'),
         source: { key: 'unified', name: '统一音乐源', files: [] },
-        currentPage: 'home'
+        currentPage: 'charts'
       };
 
       if (!Number.isFinite(state.volume)) state.volume = 0.8;
@@ -2049,11 +2049,22 @@
       }
 
       function loadRecommend() {
+        // 优先使用本地缓存，实现秒开
+        var cached = load('xym_categories');
+        if (cached && cached.length) {
+          state.categories = cached;
+          renderQuickPicks();
+          if (state.currentPage === 'charts') showCat(activeCat);
+          if (state.currentPage === 'library') renderLibrary();
+          if (state.view === 'recommend' && state.currentPage === 'home') showCat(0);
+        }
+        // 后台拉取最新数据
         fetch(API + '/api/categories')
           .then(function (res) { return res.json(); })
           .then(function (cats) {
             if (!Array.isArray(cats) || !cats.length) throw new Error('加载失败');
             state.categories = cats;
+            save('xym_categories', cats);
             renderQuickPicks();
             if (state.view === 'recommend') showCat(0);
             if (state.currentPage === 'library') renderLibrary();
@@ -2191,6 +2202,8 @@
       // ---- 排行榜：带排名高亮的歌曲列表 ----
       function renderCharts() {
         state.view = 'recommend';
+        $('homeHero').hidden = true;
+        $('quickSection').hidden = true;
         $('subtabs').style.display = 'flex';
         content.style.display = '';
         $('workspacePanel').hidden = true;
@@ -2271,114 +2284,7 @@
         }
       }
 
-      // ---- 歌单：本地歌单管理 ----
-      function renderPlaylists() {
-        $('workspacePanel').hidden = false;
-        var playlists = load('xym_playlists') || [];
-        var html = '<div class="page-header"><div class="page-header-icon" style="background:rgba(255,180,80,.13);color:#ffb450">▤</div><div><h2>我的歌单</h2><p>' + playlists.length + ' 个本地歌单 · 数据保存在浏览器中</p></div>';
-        html += '<button class="btn" id="createPlistBtn" type="button" style="margin-left:auto;">+ 新建歌单</button></div>';
-        if (!playlists.length) {
-          html += '<div class="plist-empty"><div class="plist-empty-icon">▤</div><p>还没有创建歌单<br>点击「新建歌单」将喜欢的歌曲整理成你的专属歌单</p></div>';
-        } else {
-          html += '<div class="plist-grid">';
-          playlists.forEach(function (pl, i) {
-            var count = (pl.songs || []).length;
-            html += '<button class="plist-card" data-plist-idx="' + i + '" type="button">';
-            html += '<div class="plist-cover"><div class="plist-icon">▤</div><div class="plist-overlay"></div><div class="plist-count">' + count + ' 首</div></div>';
-            html += '<div class="plist-info"><div class="plist-name">' + escapeHtml(pl.name || '未命名歌单') + '</div><div class="plist-desc">' + escapeHtml(pl.desc || '暂无描述') + '</div></div>';
-            html += '</button>';
-          });
-          html += '</div>';
-        }
-        $('workspacePanel').innerHTML = html;
-        var createBtn = $('createPlistBtn');
-        if (createBtn) {
-          createBtn.addEventListener('click', function () {
-            var name = prompt('请输入歌单名称：');
-            if (!name || !name.trim()) return;
-            var playlists = load('xym_playlists') || [];
-            playlists.push({ name: name.trim(), desc: '', songs: [], createdAt: Date.now() });
-            save('xym_playlists', playlists);
-            renderPlaylists();
-            toast('歌单「' + name.trim() + '」已创建');
-          });
-        }
-        Array.prototype.forEach.call($('workspacePanel').querySelectorAll('.plist-card'), function (card) {
-          card.addEventListener('click', function () {
-            var idx = Number(card.dataset.plistIdx);
-            var playlists = load('xym_playlists') || [];
-            var pl = playlists[idx];
-            if (!pl) return;
-            state.songs = pl.songs || [];
-            renderPlaylistDetail(idx, pl);
-          });
-        });
-      }
-
-      function renderPlaylistDetail(idx, pl) {
-        var songs = pl.songs || [];
-        var html = '<div class="page-header"><button class="icon-btn" id="plBackBtn" style="width:auto;border-radius:99px;padding:0 14px;font-size:13px;gap:6px;">← 返回歌单</button><div style="flex:1"><h2>' + escapeHtml(pl.name) + '</h2><p>' + songs.length + ' 首歌曲</p></div>';
-        html += '<button class="clear-btn" id="deletePlistBtn" type="button" style="margin-left:auto;">删除歌单</button></div>';
-        if (!songs.length) {
-          html += '<div class="panel" style="text-align:center;padding:50px 20px;color:var(--desk-muted);"><div style="font-size:56px;margin-bottom:12px;opacity:.45;">▤</div><strong>歌单还是空的</strong><br>去音乐库和排行榜中收藏歌曲，然后加入这个歌单</div>';
-        } else {
-          html += '<div class="chart-list">';
-          songs.forEach(function (song, i) {
-            var cover = imageUrl(song, 80);
-            html += '<div class="chart-song" data-pl-song-idx="' + i + '">';
-            html += '<div class="chart-rank">' + (i + 1) + '</div>';
-            html += '<img src="' + cover + '" alt="" loading="lazy">';
-            html += '<div><div class="song-name">' + escapeHtml(song.name || '未知歌曲') + '</div><div class="song-artist">' + escapeHtml(song.artist || '未知歌手') + '</div></div>';
-            html += '<div class="chart-actions"><button class="icon-btn play-one-chart" title="播放"><svg viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"/></svg></button><button class="icon-btn remove-pl-song" title="移除" style="color:#e0554a;"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div>';
-            html += '</div>';
-          });
-          html += '</div>';
-        }
-        $('workspacePanel').innerHTML = html;
-        $('workspacePanel').hidden = false;
-        var backBtn = $('plBackBtn');
-        if (backBtn) backBtn.addEventListener('click', function () { renderPlaylists(); });
-        var delBtn = $('deletePlistBtn');
-        if (delBtn) {
-          delBtn.addEventListener('click', function () {
-            if (!confirm('确定要删除歌单「' + pl.name + '」吗？此操作不可恢复。')) return;
-            var playlists = load('xym_playlists') || [];
-            playlists.splice(idx, 1);
-            save('xym_playlists', playlists);
-            toast('歌单已删除');
-            renderPlaylists();
-          });
-        }
-        // 点击播放
-        Array.prototype.forEach.call($('workspacePanel').querySelectorAll('.chart-song'), function (row) {
-          row.addEventListener('click', function (e) {
-            if (e.target.closest('button')) return;
-            playAt(Number(row.dataset.plSongIdx));
-          });
-        });
-        Array.prototype.forEach.call($('workspacePanel').querySelectorAll('.play-one-chart'), function (btn) {
-          btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var row = btn.closest('.chart-song');
-            playAt(Number(row.dataset.plSongIdx));
-          });
-        });
-        Array.prototype.forEach.call($('workspacePanel').querySelectorAll('.remove-pl-song'), function (btn) {
-          btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var row = btn.closest('.chart-song');
-            var songIdx = Number(row.dataset.plSongIdx);
-            var playlists = load('xym_playlists') || [];
-            var pl = playlists[idx];
-            if (!pl) return;
-            var removed = pl.songs[songIdx];
-            pl.songs.splice(songIdx, 1);
-            save('xym_playlists', playlists);
-            toast('已移除：' + (removed ? removed.name : ''));
-            renderPlaylistDetail(idx, pl);
-          });
-        });
-      }
+      
 
       // ---- 下载管理 ----
       function renderDownloads() {
@@ -2720,23 +2626,32 @@
       restoreSession();
 
       var deferredInstallPrompt = null;
+      var installBtn = $('installBtn');
       window.addEventListener('beforeinstallprompt', function (event) {
         event.preventDefault();
         deferredInstallPrompt = event;
-        $('installBtn').classList.add('ready');
+        if (installBtn) installBtn.classList.add('ready');
       });
-      $('installBtn').addEventListener('click', function () {
-        if (!deferredInstallPrompt) return;
-        deferredInstallPrompt.prompt();
-        deferredInstallPrompt.userChoice.finally(function () {
-          deferredInstallPrompt = null;
-          $('installBtn').classList.remove('ready');
+      if (installBtn) {
+        installBtn.addEventListener('click', function () {
+          if (!deferredInstallPrompt) return;
+          deferredInstallPrompt.prompt();
+          deferredInstallPrompt.userChoice.finally(function () {
+            deferredInstallPrompt = null;
+            if (installBtn) installBtn.classList.remove('ready');
+          });
         });
-      });
+      }
       window.addEventListener('appinstalled', function () { toast('已安装到设备桌面'); });
 
+      // 同步加载本地缓存，确保 renderCharts 立即有数据可渲染
+      var cachedCats = load('xym_categories');
+      if (cachedCats && cachedCats.length) {
+        state.categories = cachedCats;
+        renderQuickPicks();
+      }
       loadRecommend();
-      setView('recommend');
+      renderCharts();
       if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});
     })();
   </script>

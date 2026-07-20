@@ -1,5 +1,5 @@
 // 小源音乐 Service Worker：Stale-While-Revalidate + 防错缓
-const CACHE_NAME = 'xiaoyuan-player-v8';
+const CACHE_NAME = 'xiaoyuan-player-v14';
 const ASSETS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg', '/donate.png'];
 
 self.addEventListener('install', (event) => {
