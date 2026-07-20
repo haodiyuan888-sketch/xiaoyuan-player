@@ -1663,7 +1663,13 @@
         $('subtabs').style.display = (view === 'recommend') ? 'flex' : 'none';
         $('homeHero').hidden = view !== 'recommend';
         $('quickSection').hidden = view !== 'recommend';
-        if (view === 'recommend') showCat(activeCat);
+        if (view === 'recommend') {
+          if (state.categories && state.categories.length) {
+            showCat(activeCat);
+          } else {
+            showSkeleton();
+          }
+        }
         if (view === 'search') renderSongs(state.searchSongs, '搜索结果');
         if (view === 'favorite') renderSongs(state.favorite, '我的收藏');
         if (view === 'recent') renderSongs(state.recent, '最近播放');
@@ -2043,7 +2049,6 @@
       }
 
       function loadRecommend() {
-        showSkeleton();
         fetch(API + '/api/categories')
           .then(function (res) { return res.json(); })
           .then(function (cats) {
@@ -2051,24 +2056,24 @@
             state.categories = cats;
             renderQuickPicks();
             if (state.view === 'recommend') showCat(0);
-            // 如果当前在音乐库页面，刷新音乐库
             if (state.currentPage === 'library') renderLibrary();
             if (state.currentPage === 'charts') showCat(activeCat);
           })
           .catch(function () {
-            if (state.view !== 'recommend') return;
-            var kw = '抖音热歌';
-            fetch(API + '/api/search?keyword=' + encodeURIComponent(kw))
-              .then(function (res) { return res.json(); })
-              .then(function (songs) {
-                if (!Array.isArray(songs)) throw new Error('加载失败');
-                state.searchSongs = songs;
-                state.songs = songs;
-                renderSongs(songs, '推荐歌曲');
-              })
-              .catch(function () {
-                content.innerHTML = '<div class="empty"><strong>推荐歌曲加载失败</strong><br>请检查网络后刷新页面重试</div>';
-              });
+            if (state.view === 'recommend') {
+              var kw = '抖音热歌';
+              fetch(API + '/api/search?keyword=' + encodeURIComponent(kw))
+                .then(function (res) { return res.json(); })
+                .then(function (songs) {
+                  if (!Array.isArray(songs)) throw new Error('加载失败');
+                  state.searchSongs = songs;
+                  state.songs = songs;
+                  renderSongs(songs, '推荐歌曲');
+                })
+                .catch(function () {
+                  content.innerHTML = '<div class="empty"><strong>推荐歌曲加载失败</strong><br>请检查网络后刷新页面重试</div>';
+                });
+            }
           });
       }
 
@@ -2189,7 +2194,7 @@
         $('subtabs').style.display = 'flex';
         content.style.display = '';
         $('workspacePanel').hidden = true;
-        if (!state.categories || !state.categories.length) { loadRecommend(); return; }
+        if (!state.categories || !state.categories.length) { showSkeleton(); loadRecommend(); return; }
         showCat(activeCat);
       }
 
