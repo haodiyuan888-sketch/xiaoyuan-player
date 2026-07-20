@@ -995,7 +995,7 @@
     .side-footer { margin-top: auto; display: grid; gap: 10px; }
     .side-footer small { padding: 0 13px; color: #606570; font-size: 11px; }
     .app { width: min(1280px, calc(100% - 218px)); min-height: 100dvh; margin-left: 218px; padding: 26px 34px 46px; }
-    .top { position: relative; display: flex; grid-template-columns: none; justify-content: space-between; gap: 24px; padding: 0; background: transparent; }
+    .top { position: relative; display: flex; grid-template-columns: none; justify-content: space-between; gap: 24px; padding: 0 0 20px; background: transparent; }
     .brand { color: #fff; font-size: 25px; white-space: nowrap; }
     .brand::before { display: none; }
     .top-actions { flex: 1; justify-content: flex-end; max-width: 680px; }
@@ -1014,7 +1014,7 @@
     .tab { color: #9196a1; font-size: 15px; }
     .tab.active { color: #fff; }
     .tab.active::after { background: var(--desk-accent); }
-    .home-hero { position: relative; display: flex; min-height: 235px; margin: 28px 0 29px; padding: 31px 42px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 20px; background: linear-gradient(112deg, #201b2b, #281f2e 44%, #181b28); }
+    .home-hero { position: relative; display: flex; min-height: 235px; margin: 12px 0 29px; padding: 31px 42px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 20px; background: linear-gradient(112deg, #201b2b, #281f2e 44%, #181b28); }
     .home-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 50%, rgba(255,255,255,.04)); pointer-events: none; }
     .hero-copy { position: relative; z-index: 1; }
     .hero-kicker { color: #ff99a5; font-size: 12px; letter-spacing: .18em; }
@@ -1188,7 +1188,7 @@
       .quick-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .hero-art { right: -20px; width: 210px; height: 210px; top: -25px; }
       .hero-copy h1 { font-size: clamp(22px, 3vw, 30px); }
-      .home-hero { min-height: 200px; padding: 24px 28px; margin: 22px 0 24px; }
+      .home-hero { min-height: 200px; padding: 24px 28px; margin: 10px 0 24px; }
       .page-header { padding: 18px 20px; }
       .library-grid { grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 10px; }
       .plist-grid { grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 12px; }
@@ -1213,7 +1213,7 @@
       }
       .side-nav .side-link span { font-size: 18px; }
       .app { width: 100%; margin: 0; padding: 14px 12px 24px; min-height: auto; }
-      .top { align-items: center; gap: 6px; flex-wrap: nowrap; }
+      .top { align-items: center; gap: 6px; flex-wrap: nowrap; padding-bottom: 14px; }
       .brand { display: none; }
       .top-actions { max-width: none; width: 100%; gap: 5px; flex-wrap: nowrap; }
       .search { max-width: none; flex: 1; min-width: 0; height: 38px; display: flex; align-items: center; }
@@ -1227,7 +1227,7 @@
       .tabs { margin: 14px 0; gap: 16px; }
       .tab { font-size: 14px; padding: 4px 0 6px; }
       /* Hero 区域 */
-      .home-hero { min-height: 180px; padding: 22px 18px; border-radius: 14px; margin: 18px 0 20px; }
+      .home-hero { min-height: 180px; padding: 22px 18px; border-radius: 14px; margin: 8px 0 20px; }
       .hero-kicker { font-size: 10px; }
       .hero-copy h1 { font-size: 22px; margin: 6px 0; }
       .hero-copy p { max-width: 160px; font-size: 11px; }
@@ -1385,7 +1385,7 @@
     .tab { color: var(--pastel-muted); }
     .tab.active { color: var(--pastel-ink); }
     .tab.active::after { background: var(--pastel-accent); }
-    .home-hero { border-color: rgba(255,255,255,.8); background: linear-gradient(118deg, rgba(255,255,255,.86), rgba(255,226,214,.64) 45%, rgba(221,234,255,.76)); box-shadow: 0 18px 44px rgba(94,119,158,.14); margin-top: 28px; }
+    .home-hero { border-color: rgba(255,255,255,.8); background: linear-gradient(118deg, rgba(255,255,255,.86), rgba(255,226,214,.64) 45%, rgba(221,234,255,.76)); box-shadow: 0 18px 44px rgba(94,119,158,.14); margin-top: 12px; }
     .home-hero::after { background: linear-gradient(90deg, transparent 50%, rgba(255,255,255,.26)); }
     .hero-kicker { color: var(--pastel-accent); }
     .hero-copy h1 { color: var(--pastel-ink); }
@@ -1433,7 +1433,7 @@
     <nav class="side-nav" id="sideNav">
       <button class="side-link active" data-page="home"><span>⌂</span>首页</button>
       <button class="side-link" data-page="charts"><span>♛</span>排行榜</button>
-      <button class="side-link" data-page="favorite"><span>♡</span>收藏</button>
+      <button class="side-link" data-page="favorite"><span>❤</span>收藏</button>
       <button class="side-link" data-page="history"><span>◷</span>历史播放</button>
     </nav>
     <div class="side-footer"><button class="side-link" data-page="settings"><span>⚙</span>设置</button><small></small></div>
@@ -2350,7 +2350,7 @@
         state.view = 'favorite';
         state.songs = state.favorite;
         var html = '<div class="panel-head fav-header" style="display:flex;align-items:center;gap:12px;padding:18px 22px;border-radius:13px 13px 0 0;">';
-        html += '<span style="font-size:28px;">♡</span><div><strong style="font-size:17px;">我的收藏</strong><br><span style="color:var(--desk-muted);font-size:12px;">' + state.favorite.length + ' 首心爱歌曲</span></div></div>';
+        html += '<span style="font-size:28px;">❤</span><div><strong style="font-size:17px;">我的收藏</strong><br><span style="color:var(--desk-muted);font-size:12px;">' + state.favorite.length + ' 首心爱歌曲</span></div></div>';
         if (!state.favorite.length) {
           html += '<div class="empty"><strong>还没有收藏歌曲</strong><br>点击歌曲旁的心形按钮收藏你喜欢的音乐</div>';
         } else {
@@ -2690,7 +2690,7 @@
         { name: '水蜜桃', color: '#ffecd2' }, { name: '樱花瓣', color: '#ffb7c5' }
       ];
       var lyricTheme = parseInt(load('xym_lyric_theme'));
-      if (isNaN(lyricTheme)) lyricTheme = 15; // 默认樱花瓣主题
+      if (isNaN(lyricTheme) || lyricTheme === 0) lyricTheme = 15; // 默认樱花瓣主题
       var lyricFullscreen = document.querySelector('.lyric-fullscreen');
 
       var vinylRecord = document.getElementById('vinylRecord');
