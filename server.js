@@ -640,6 +640,7 @@ http
       '/icon-192.png': ['icon-192.png', 'image/png'],
       '/icon-512.png': ['icon-512.png', 'image/png'],
       '/icon.svg': ['icon.svg', 'image/svg+xml; charset=utf-8'],
+      '/1.mp4': ['1.mp4', 'video/mp4'],
     };
     if (staticMap[pathname]) {
       const [fileName, contentType] = staticMap[pathname];
