@@ -68,19 +68,40 @@ function writeJson(res, code, data) {
   res.end(JSON.stringify(data));
 }
 
-function serveFile(res, filePath, contentType) {
-  fs.readFile(filePath, (err, data) => {
+function serveFile(req, res, filePath, contentType) {
+  fs.stat(filePath, (err, stats) => {
     if (err) {
       res.writeHead(404, { ...CORS, 'Content-Type': 'text/plain; charset=utf-8' });
       res.end('404');
       return;
     }
-    res.writeHead(200, {
-      ...CORS,
-      'Content-Type': contentType,
-      'Cache-Control': contentType.includes('html') ? 'no-cache' : 'public, max-age=3600',
-    });
-    res.end(data);
+    var fileSize = stats.size;
+    var range = req.headers.range;
+    if (range) {
+      // iOS Safari 要求 206 Partial Content 才播放视频
+      var parts = range.replace(/bytes=/, '').split('-');
+      var start = parseInt(parts[0], 10);
+      var end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      var chunkSize = end - start + 1;
+      res.writeHead(206, {
+        ...CORS,
+        'Content-Type': contentType,
+        'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
+        'Content-Length': chunkSize,
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': contentType.includes('html') ? 'no-cache' : 'public, max-age=3600',
+      });
+      fs.createReadStream(filePath, { start: start, end: end }).pipe(res);
+    } else {
+      res.writeHead(200, {
+        ...CORS,
+        'Content-Type': contentType,
+        'Content-Length': fileSize,
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': contentType.includes('html') ? 'no-cache' : 'public, max-age=3600',
+      });
+      fs.createReadStream(filePath).pipe(res);
+    }
   });
 }
 
@@ -644,7 +665,7 @@ http
     };
     if (staticMap[pathname]) {
       const [fileName, contentType] = staticMap[pathname];
-      serveFile(res, path.join(ROOT, fileName), contentType);
+      serveFile(req, res, path.join(ROOT, fileName), contentType);
       return;
     }
     writeJson(res, 404, { error: '接口不存在' });
