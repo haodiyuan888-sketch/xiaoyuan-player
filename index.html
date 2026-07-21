@@ -331,14 +331,14 @@
       align-items: center;
       z-index: 51;
       overflow-x: hidden;
+      background: #000; /* iOS 视频未加载时的后备底色 */
     }
     /* ===== 歌词页：视频背景 + 玻璃效果 ===== */
     .lyric-video {
-      position: fixed; top: 0; left: 0; z-index: 48;
+      position: absolute; inset: 0; z-index: 0;
       width: 100%; height: 100%;
       object-fit: cover;
       pointer-events: none;
-      background: #000;
     }
     /* ===== 歌词 3D 立体效果 ===== */
     .lyric-body { color: rgba(255,255,255,.3); }
@@ -1865,9 +1865,17 @@
         $('lyricLike').classList.toggle('liked', isLiked(song));
         updateLyricPlayBtn();
         $('lyricOverlay').classList.add('show');
-        // 视频已预加载，移除隐藏直接显示
-        var v = $('bgVideo');
-        v.style.cssText = 'position:fixed;top:0;left:0;z-index:48;width:100%;height:100%;object-fit:cover;pointer-events:none;';
+        // 利用用户点击手势创建视频背景（放在 fullscreen 内部，兼容 iOS）
+        var v = document.createElement('video');
+        v.className = 'lyric-video';
+        v.src = '/1.mp4';
+        v.loop = true; v.muted = true;
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.setAttribute('x5-video-player-type', 'h5');
+        v.setAttribute('preload', 'auto');
+        var fs = document.querySelector('.lyric-fullscreen');
+        fs.insertBefore(v, fs.firstChild);
         v.play().catch(function () {});
         document.body.style.overflow = 'hidden';
         // 监听用户手动滚动（排除自动滚动触发的 scroll 事件）
@@ -1904,8 +1912,8 @@
 
       function hideLyric() {
         $('lyricOverlay').classList.remove('show');
-        var v = $('bgVideo');
-        if (v) { v.pause(); v.style.cssText = 'position:fixed;top:0;left:0;z-index:-1;width:100%;height:100%;object-fit:cover;pointer-events:none;transform:scale(0);'; }
+        var v = document.querySelector('.lyric-fullscreen .lyric-video');
+        if (v) { v.pause(); v.remove(); }
         document.body.style.overflow = '';
         if (state.lyricTimer) { clearInterval(state.lyricTimer); state.lyricTimer = null; }
       }
@@ -2452,28 +2460,6 @@
         });
       }
       window.addEventListener('appinstalled', function () { toast('已安装到设备桌面'); });
-
-      // 预加载歌词背景视频（全尺寸 + transform 隐藏，iOS 可正常渲染）
-      (function () {
-        var v = document.createElement('video');
-        v.id = 'bgVideo';
-        v.loop = true; v.muted = true;
-        v.setAttribute('playsinline', '');
-        v.setAttribute('webkit-playsinline', '');
-        v.setAttribute('x5-video-player-type', 'h5');
-        v.setAttribute('preload', 'auto');
-        v.style.cssText = 'position:fixed;top:0;left:0;z-index:-1;width:100%;height:100%;object-fit:cover;pointer-events:none;transform:scale(0);';
-        v.src = '/1.mp4';
-        document.body.appendChild(v);
-        v.load();
-        function startBgVideo() {
-          v.play().catch(function () {});
-          document.removeEventListener('touchstart', startBgVideo);
-          document.removeEventListener('click', startBgVideo);
-        }
-        document.addEventListener('touchstart', startBgVideo, { once: true });
-        document.addEventListener('click', startBgVideo, { once: true });
-      })();
 
       // 同步加载本地缓存，加速首次渲染
       var cachedCats = load('xym_categories');
