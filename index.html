@@ -335,20 +335,13 @@
     /* ===== 歌词页：视频背景 + 玻璃效果 ===== */
     .lyric-video {
       position: fixed; inset: 0; z-index: 48;
-      width: 100vw; height: 100vh;
+      width: 100dvw; height: 100dvh;
       object-fit: cover;
-      display: none;
+      opacity: 0;
       pointer-events: none;
+      transition: opacity .5s;
     }
-    .lyric-video.show { display: block; }
-    @supports not (object-fit: cover) {
-      .lyric-video {
-        width: auto; height: auto;
-        min-width: 100%; min-height: 100%;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
+    .lyric-video.show { opacity: 1; }
     /* ===== 歌词 3D 立体效果 ===== */
     .lyric-body { color: rgba(255,255,255,.3); }
     .lyric-line {
@@ -1303,21 +1296,10 @@
           <button class="icon-btn" id="lyricBtn" title="歌词"><svg viewBox="0 0 24 24"><circle cx="7" cy="6" r="2"/><circle cx="7" cy="12" r="2"/><circle cx="7" cy="18" r="2"/><path d="M11 6h8M11 12h8M11 18h8" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
           <button class="icon-btn" id="downloadBtn" title="下载"><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5z"/><rect x="3" y="18" width="18" height="3"/></svg></button>
           <button class="icon-btn mode-btn" id="modeBtn" title="播放模式"><svg viewBox="0 0 24 24" id="modeIcon"><path d="M4 12a8 8 0 018-8v3.5l4-4-4-4V3a10 10 0 00-10 10h3.5zm16 0a8 8 0 01-8 8v-3.5l-4 4 4 4V21a10 10 0 0010-10h-3.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button class="icon-btn more-btn" id="moreBtn" title="更多播放设置" aria-expanded="false">•••</button>
         </div>
       </div>
     </div>
-    <div class="mode-popover" id="modePopover">
-      <button class="mode-option active" data-mode="list"><svg viewBox="0 0 24 24" class="mode-opt-icon"><path d="M4 12a8 8 0 018-8v3.5l4-4-4-4V3a10 10 0 00-10 10h3.5zm16 0a8 8 0 01-8 8v-3.5l-4 4 4 4V21a10 10 0 0010-10h-3.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>列表循环</span></button>
-      <button class="mode-option" data-mode="single"><svg viewBox="0 0 24 24" class="mode-opt-icon"><path d="M4 12a8 8 0 018-8v3.5l4-4-4-4V3a10 10 0 00-10 10h3.5zm16 0a8 8 0 01-8 8v-3.5l-4 4 4 4V21a10 10 0 0010-10h-3.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><text x="12" y="17" text-anchor="middle" font-size="10" fill="currentColor" font-weight="700">1</text></svg><span>单曲循环</span></button>
-      <button class="mode-option" data-mode="random"><svg viewBox="0 0 24 24" class="mode-opt-icon"><path d="M3 18l4-4-4-4M8 14h2a5 5 0 005-5V8m3 4l-4 4 4 4m-8-4H8a5 5 0 01-5-5v-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>随机播放</span></button>
-    </div>
   </footer>
-  <aside class="play-tools" id="playTools" aria-label="播放设置">
-    <div class="tool-row"><label for="volumeRange">音量</label><button class="tool-action" id="muteBtn" type="button">静音</button><input id="volumeRange" type="range" min="0" max="100" value="80" aria-label="音量"></div>
-    <div class="tool-row"><label for="sleepTimer">定时关闭</label><select class="tool-select" id="sleepTimer"><option value="0">关闭</option><option value="10">10 分钟</option><option value="20">20 分钟</option><option value="30">30 分钟</option><option value="60">60 分钟</option></select><span id="sleepStatus"></span></div>
-    <div class="tool-row"><label>快捷键</label><span>空格播放 / ← → 快退快进</span></div>
-  </aside>
 
   <script>
     (function () {
@@ -1333,14 +1315,11 @@
         playing: false,
         playMode: load('xym_mode') || 'list',
         quality: load('xym_quality') || '740',
-        volume: Number(load('xym_volume')),
-        sleepTimer: null,
+        volume: 1.0,
         resume: load('xym_resume'),
         source: { key: 'unified', name: '统一音乐源', files: [] },
         currentPage: 'home'
       };
-
-      if (!Number.isFinite(state.volume)) state.volume = 0.8;
 
       var modeNames = { list: '列表循环', single: '单曲循环', random: '随机播放' };
       var modeSvgs = {
@@ -1890,7 +1869,9 @@
         updateLyricPlayBtn();
         $('lyricOverlay').classList.add('show');
         $('lyricVideo').classList.add('show');
-        if ($('lyricVideo').paused) { $('lyricVideo').play().catch(function () {}); }
+        requestAnimationFrame(function () {
+          if ($('lyricVideo').paused) { $('lyricVideo').play().catch(function () {}); }
+        });
         document.body.style.overflow = 'hidden';
         // 监听用户手动滚动（排除自动滚动触发的 scroll 事件）
         state._lyricUserScroll = 0;
@@ -2266,60 +2247,20 @@
         $('modeBtn').classList.remove('single-mode', 'random-mode');
         if (mode === 'single') $('modeBtn').classList.add('single-mode');
         if (mode === 'random') $('modeBtn').classList.add('random-mode');
-        // 更新弹出菜单高亮
-        var opts = $('modePopover').querySelectorAll('.mode-option');
-        opts.forEach(function (o) { o.classList.toggle('active', o.dataset.mode === mode); });
         toast('播放模式：' + modeNames[mode]);
       }
 
-      function toggleModePopover() {
-        var pop = $('modePopover');
-        pop.classList.toggle('show');
-      }
-
-      function hideModePopover() {
-        $('modePopover').classList.remove('show');
-      }
-
-      // 音质切换 FLAC → 320 → 128
-      var qualityLabels = { '740': 'FLAC', '320': 'HQ', '128': '128' };
-
+      // 点击 modeBtn 直接切换播放模式
+      var modeCycle = ['list', 'single', 'random'];
       $('modeBtn').addEventListener('click', function (e) {
         e.stopPropagation();
-        toggleModePopover();
-      });
-
-      // 点弹出菜单里的选项
-      $('modePopover').addEventListener('click', function (e) {
-        var opt = e.target.closest('.mode-option');
-        if (opt) {
-          setPlayMode(opt.dataset.mode);
-          hideModePopover();
-        }
-      });
-
-      // 点页面其他地方关闭
-      document.addEventListener('click', function (e) {
-        if (!$('modePopover').classList.contains('show')) return;
-        if (!e.target.closest('#modePopover') && !e.target.closest('#modeBtn')) {
-          hideModePopover();
-        }
+        var idx = modeCycle.indexOf(state.playMode);
+        setPlayMode(modeCycle[(idx + 1) % modeCycle.length]);
       });
 
       $('playBtn').addEventListener('click', togglePlay);
       $('nextBtn').addEventListener('click', next);
       $('prevBtn').addEventListener('click', prev);
-      $('moreBtn').addEventListener('click', function (e) {
-        e.stopPropagation();
-        var shown = $('playTools').classList.toggle('show');
-        $('moreBtn').setAttribute('aria-expanded', String(shown));
-      });
-      document.addEventListener('click', function (e) {
-        if (!e.target.closest('#playTools') && !e.target.closest('#moreBtn')) {
-          $('playTools').classList.remove('show');
-          $('moreBtn').setAttribute('aria-expanded', 'false');
-        }
-      });
       $('likeBtn').addEventListener('click', function () {
         toggleLike(state.currentSong);
         if (state.view === 'favorite') renderSongs(state.favorite, '我的收藏');
@@ -2369,7 +2310,7 @@
         // 保存下载记录
         var downloads = load('xym_downloads') || [];
         downloads.unshift({
-          name: song.name, artist: song.artist, quality: (qualityLabels && qualityLabels[state.quality]) || 'HQ',
+          name: song.name, artist: song.artist, quality: state.quality || 'HQ',
           status: 'done', time: Date.now()
         });
         downloads = downloads.slice(0, 50);
@@ -2377,40 +2318,9 @@
         location.href = API + '/api/download?id=' + encodeURIComponent(song.id) + '&quality=' + state.quality + '&provider=' + encodeURIComponent(song.provider || song.source || 'netease') + '&name=' + encodeURIComponent((song.name || 'song') + ' - ' + (song.artist || ''));
       });
 
-      function updateVolume() {
-        audio.volume = Math.max(0, Math.min(1, state.volume));
-        $('volumeRange').value = Math.round(state.volume * 100);
-        $('muteBtn').textContent = audio.muted || state.volume === 0 ? '取消静音' : '静音';
-      }
-      $('volumeRange').value = Math.round(state.volume * 100);
-      updateVolume();
-      $('volumeRange').addEventListener('input', function () {
-        state.volume = Number(this.value) / 100;
-        audio.muted = false;
-        save('xym_volume', state.volume);
-        updateVolume();
-      });
-      $('muteBtn').addEventListener('click', function () {
-        audio.muted = !audio.muted;
-        updateVolume();
-      });
-
-      function setSleepTimer(minutes) {
-        if (state.sleepTimer) clearTimeout(state.sleepTimer);
-        state.sleepTimer = null;
-        $('sleepStatus').textContent = '';
-        if (!minutes) return;
-        $('sleepStatus').textContent = minutes + ' 分钟后暂停';
-        state.sleepTimer = setTimeout(function () {
-          audio.pause();
-          state.playing = false;
-          updatePlayButton();
-          $('sleepTimer').value = '0';
-          $('sleepStatus').textContent = '';
-          toast('定时关闭：已暂停播放');
-        }, minutes * 60000);
-      }
-      $('sleepTimer').addEventListener('change', function () { setSleepTimer(Number(this.value)); });
+      // 默认最大音量
+      audio.volume = 1.0;
+      state.volume = 1.0;
 
       document.addEventListener('keydown', function (event) {
         if (event.target.matches('input, select, textarea') || event.altKey || event.ctrlKey || event.metaKey) return;
@@ -2511,7 +2421,7 @@
         if (!resume || !resume.song || !resume.song.id) return;
         state.songs = [resume.song];
         state.currentIndex = 0;
-        if (resume.quality && qualityLabels[resume.quality]) state.quality = resume.quality;
+        if (resume.quality) state.quality = resume.quality;
         playAt(0, { autoplay: false });
         audio.addEventListener('loadedmetadata', function restorePosition() {
           audio.removeEventListener('loadedmetadata', restorePosition);
@@ -2519,13 +2429,10 @@
         });
       }
 
-      // 首次加载时同步持久化的模式与音质，不弹出提示。
+      // 初始化播放模式
       $('modeIcon').innerHTML = modeSvgs[state.playMode];
       $('modeBtn').classList.toggle('single-mode', state.playMode === 'single');
       $('modeBtn').classList.toggle('random-mode', state.playMode === 'random');
-      Array.prototype.forEach.call($('modePopover').querySelectorAll('.mode-option'), function (option) {
-        option.classList.toggle('active', option.dataset.mode === state.playMode);
-      });
       applyPlayMode();
       restoreSession();
 
