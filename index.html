@@ -331,7 +331,6 @@
       align-items: center;
       z-index: 51;
       overflow-x: hidden;
-      background: #000; /* iOS 视频未加载时的后备底色 */
     }
     /* ===== 歌词页：视频背景 ===== */
     .lyric-fullscreen .lyric-video {
@@ -1866,10 +1865,12 @@
         $('lyricLike').classList.toggle('liked', isLiked(song));
         updateLyricPlayBtn();
         $('lyricOverlay').classList.add('show');
-        // 预加载的视频已就绪，直接切换到全屏显示
+        // 预加载视频已就绪，清除内联样式让 CSS 类接管
         var v = $('bgVideo');
+        v.style.cssText = '';
         v.className = 'lyric-video';
-        document.querySelector('.lyric-fullscreen').insertBefore(v, document.querySelector('.lyric-fullscreen').firstChild);
+        var fs = document.querySelector('.lyric-fullscreen');
+        fs.insertBefore(v, fs.firstChild);
         v.play().catch(function () {});
         document.body.style.overflow = 'hidden';
         // 监听用户手动滚动（排除自动滚动触发的 scroll 事件）
