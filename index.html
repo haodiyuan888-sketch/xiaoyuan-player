@@ -1888,7 +1888,7 @@
             renderLyric(state.lyricLines);
             updateLyricHighlight();
             if (state.lyricTimer) clearInterval(state.lyricTimer);
-            state.lyricTimer = setInterval(updateLyricHighlight, 500);
+            state.lyricTimer = setInterval(updateLyricHighlight, 150);
           })
           .catch(function () {
             state.lyricLines = [];
