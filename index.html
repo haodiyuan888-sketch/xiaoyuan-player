@@ -1865,18 +1865,26 @@
         $('lyricLike').classList.toggle('liked', isLiked(song));
         updateLyricPlayBtn();
         $('lyricOverlay').classList.add('show');
-        // 利用用户点击手势创建视频背景（放在 fullscreen 内部，兼容 iOS）
+        // iOS: 必须同时设置 property + attribute，DOM 挂载后延迟播放
         var v = document.createElement('video');
         v.className = 'lyric-video';
-        v.src = '/1.mp4';
-        v.loop = true; v.muted = true;
+        v.autoplay = true;
+        v.loop = true;
+        v.muted = true;
+        v.playsInline = true;
         v.setAttribute('playsinline', '');
         v.setAttribute('webkit-playsinline', '');
         v.setAttribute('x5-video-player-type', 'h5');
         v.setAttribute('preload', 'auto');
         var fs = document.querySelector('.lyric-fullscreen');
         fs.insertBefore(v, fs.firstChild);
-        v.play().catch(function () {});
+        v.src = '/1.mp4';
+        v.load();
+        // iOS 需等视频可播放后再调用 play()
+        v.oncanplay = function () { v.play().catch(function () {}); };
+        v.onerror = function () {};
+        // 兜底：500ms 后无论如何尝试播放
+        setTimeout(function () { v.play().catch(function () {}); }, 500);
         document.body.style.overflow = 'hidden';
         // 监听用户手动滚动（排除自动滚动触发的 scroll 事件）
         state._lyricUserScroll = 0;
