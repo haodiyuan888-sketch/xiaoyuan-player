@@ -334,14 +334,15 @@
     }
     /* ===== 歌词页：视频背景 + 玻璃效果 ===== */
     .lyric-video {
-      position: fixed; inset: 0; z-index: 48;
-      width: 100dvw; height: 100dvh;
+      position: fixed; top: 0; left: 0; z-index: 48;
+      width: 100%; height: 100%;
+      min-width: 100%; min-height: 100%;
       object-fit: cover;
-      opacity: 0;
+      visibility: hidden;
       pointer-events: none;
-      transition: opacity .5s;
+      background: #000;
     }
-    .lyric-video.show { opacity: 1; }
+    .lyric-video.show { visibility: visible; }
     /* ===== 歌词 3D 立体效果 ===== */
     .lyric-body { color: rgba(255,255,255,.3); }
     .lyric-line {
@@ -2454,6 +2455,17 @@
         });
       }
       window.addEventListener('appinstalled', function () { toast('已安装到设备桌面'); });
+
+      // iOS/移动端首次触摸时预启动视频（解除自动播放限制）
+      var videoPrimed = false;
+      function primeVideo() {
+        if (videoPrimed) return;
+        videoPrimed = true;
+        var v = $('lyricVideo');
+        if (v) { v.play().catch(function () {}); }
+      }
+      document.addEventListener('touchstart', primeVideo, { once: true });
+      document.addEventListener('click', primeVideo, { once: true });
 
       // 同步加载本地缓存，加速首次渲染
       var cachedCats = load('xym_categories');
