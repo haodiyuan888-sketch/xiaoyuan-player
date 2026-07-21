@@ -336,13 +336,10 @@
     .lyric-video {
       position: fixed; top: 0; left: 0; z-index: 48;
       width: 100%; height: 100%;
-      min-width: 100%; min-height: 100%;
       object-fit: cover;
-      visibility: hidden;
       pointer-events: none;
       background: #000;
     }
-    .lyric-video.show { visibility: visible; }
     /* ===== 歌词 3D 立体效果 ===== */
     .lyric-body { color: rgba(255,255,255,.3); }
     .lyric-line {
@@ -1250,7 +1247,6 @@
     </div>
   </main>
 
-  <video class="lyric-video" id="lyricVideo" src="/1.mp4" autoplay loop muted playsinline preload="auto" webkit-playsinline x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>
   <div class="lyric-overlay" id="lyricOverlay">
     <div class="lyric-fullscreen">
       <button class="lyric-close" id="lyricClose"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button>
@@ -1869,10 +1865,23 @@
         $('lyricLike').classList.toggle('liked', isLiked(song));
         updateLyricPlayBtn();
         $('lyricOverlay').classList.add('show');
-        $('lyricVideo').classList.add('show');
-        requestAnimationFrame(function () {
-          if ($('lyricVideo').paused) { $('lyricVideo').play().catch(function () {}); }
-        });
+        // 动态创建视频背景（利用用户点击歌词按钮的手势解锁自动播放）
+        if (!$('lyricVideo')) {
+          var v = document.createElement('video');
+          v.id = 'lyricVideo';
+          v.className = 'lyric-video';
+          v.src = '/1.mp4';
+          v.autoplay = true;
+          v.loop = true;
+          v.muted = true;
+          v.playsInline = true;
+          v.setAttribute('webkit-playsinline', '');
+          v.setAttribute('x5-video-player-type', 'h5');
+          document.body.appendChild(v);
+          v.play().catch(function () {});
+        } else {
+          $('lyricVideo').play().catch(function () {});
+        }
         document.body.style.overflow = 'hidden';
         // 监听用户手动滚动（排除自动滚动触发的 scroll 事件）
         state._lyricUserScroll = 0;
@@ -1908,7 +1917,8 @@
 
       function hideLyric() {
         $('lyricOverlay').classList.remove('show');
-        $('lyricVideo').classList.remove('show');
+        var v = $('lyricVideo');
+        if (v) { v.pause(); v.remove(); }
         document.body.style.overflow = '';
         if (state.lyricTimer) { clearInterval(state.lyricTimer); state.lyricTimer = null; }
       }
@@ -2455,17 +2465,6 @@
         });
       }
       window.addEventListener('appinstalled', function () { toast('已安装到设备桌面'); });
-
-      // iOS/移动端首次触摸时预启动视频（解除自动播放限制）
-      var videoPrimed = false;
-      function primeVideo() {
-        if (videoPrimed) return;
-        videoPrimed = true;
-        var v = $('lyricVideo');
-        if (v) { v.play().catch(function () {}); }
-      }
-      document.addEventListener('touchstart', primeVideo, { once: true });
-      document.addEventListener('click', primeVideo, { once: true });
 
       // 同步加载本地缓存，加速首次渲染
       var cachedCats = load('xym_categories');
