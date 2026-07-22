@@ -684,7 +684,7 @@
       .search { flex: 1; }
       .install-btn { min-height: 40px; }
       .player-row { grid-template-columns: 40px minmax(0, 1fr) auto; }
-      .player-row > .controls #downloadBtn, .player-row > .controls .mode-btn { display: none; }
+      .player-row > .controls #downloadBtn { display: none; }
       .more-btn { display: inline-flex; }
       .song { padding: 9px 10px; min-height: 68px; }
       .panel { border-radius: 16px; }
@@ -1041,7 +1041,7 @@
       .controls { gap: 1px; flex-wrap: nowrap; }
       .controls .icon-btn { width: 27px; height: 27px; }
       .controls .icon-btn svg { width: 13px; height: 13px; }
-      .controls #downloadBtn, .controls .mode-btn { display: none; }
+      .controls #downloadBtn { display: none; }
       .play-btn { width: 36px; height: 36px; flex-shrink: 0; }
       .play-btn svg { width: 16px; height: 16px; }
       .now-title { font-size: 12px; max-width: 100%; }
@@ -1297,6 +1297,11 @@
       </div>
     </div>
   </footer>
+  <div class="mode-popover" id="modePopover">
+    <button class="mode-option active" data-mode="list">列表循环</button>
+    <button class="mode-option" data-mode="single">单曲循环</button>
+    <button class="mode-option" data-mode="random">随机播放</button>
+  </div>
 
   <script>
     (function () {
@@ -1345,15 +1350,50 @@
       document.addEventListener('click', unlockAudio);
       document.addEventListener('touchend', unlockAudio);
 
-      // 从微信悬浮窗或其他后台场景返回时，同步界面状态；不强制恢复用户主动暂停的播放。
+      // 后台播放追踪：独立于 state.playing，防止 pause 事件误清标记
+      var _wasPlayingBeforeHidden = false;
       document.addEventListener('visibilitychange', function () {
-        if (!document.hidden) {
+        if (document.hidden) {
+          _wasPlayingBeforeHidden = !audio.paused;
+        } else {
           syncMediaSession();
-          if (state.playing && audio.paused && state.resumeAfterInterruption) {
-            audio.play().catch(function () {});
+          unlockAudio();
+          if (_wasPlayingBeforeHidden) {
+            _wasPlayingBeforeHidden = false;
+            var retry = 0;
+            function tryResume() {
+              if (audio.paused && state.currentSong) {
+                audio.play().then(function () {
+                  state.playing = true; updatePlayButton();
+                }).catch(function () {
+                  if (++retry < 10) setTimeout(tryResume, retry * 500);
+                });
+              }
+            }
+            tryResume();
           }
         }
       });
+      window.addEventListener('pagehide', function () {
+        _wasPlayingBeforeHidden = !audio.paused;
+        saveResume();
+      });
+      window.addEventListener('pageshow', function () {
+        unlockAudio();
+        if (_wasPlayingBeforeHidden) {
+          _wasPlayingBeforeHidden = false;
+          audio.play().catch(function () {
+            setTimeout(function () { audio.play().catch(function () {}); }, 500);
+          });
+        }
+      });
+      // 后台看门狗：每 10 秒检查一次，若应播放但已暂停则自动恢复
+      setInterval(function () {
+        if (state.playing && audio.paused && audio.src && state.currentSong) {
+          unlockAudio();
+          audio.play().catch(function () {});
+        }
+      }, 10000);
 
       // Media Session API —— 状态栏/锁屏控制 + 后台播放
       if ('mediaSession' in navigator) {
@@ -1733,6 +1773,12 @@
 
       function next() {
         if (!state.songs.length) return;
+        if (state.playMode === 'single') {
+          // 单曲循环：从头重播当前歌曲
+          audio.currentTime = 0;
+          audio.play().catch(function () {});
+          return;
+        }
         if (state.playMode === 'random') {
           var idx;
           do { idx = Math.floor(Math.random() * state.songs.length); }
@@ -1740,13 +1786,12 @@
           playAt(idx);
           return;
         }
-        // 列表循环和单曲循环：下一首（单曲循环用 audio.loop 实现）
-        playAt((state.currentIndex + 1 + state.songs.length) % state.songs.length);
+        // 列表循环：顺序下一首，末尾回到第一首
+        playAt((state.currentIndex + 1) % state.songs.length);
       }
 
       function applyPlayMode() {
-        // 单曲循环用浏览器原生 loop 属性，最可靠
-        audio.loop = (state.playMode === 'single');
+        audio.loop = false; // 统一不用原生 loop，由 next() 完全控制
       }
 
       function prev() {
@@ -2257,14 +2302,25 @@
         if (mode === 'single') $('modeBtn').classList.add('single-mode');
         if (mode === 'random') $('modeBtn').classList.add('random-mode');
         toast('播放模式：' + modeNames[mode]);
+        // 同步弹窗高亮
+        var opts = $('modePopover').querySelectorAll('.mode-option');
+        opts.forEach(function (o) { o.classList.toggle('active', o.dataset.mode === mode); });
       }
 
-      // 点击 modeBtn 直接切换播放模式
-      var modeCycle = ['list', 'single', 'random'];
+      // modeBtn：点击弹出/关闭模式菜单
       $('modeBtn').addEventListener('click', function (e) {
         e.stopPropagation();
-        var idx = modeCycle.indexOf(state.playMode);
-        setPlayMode(modeCycle[(idx + 1) % modeCycle.length]);
+        $('modePopover').classList.toggle('show');
+      });
+      $('modePopover').addEventListener('click', function (e) {
+        var opt = e.target.closest('.mode-option');
+        if (opt) { setPlayMode(opt.dataset.mode); $('modePopover').classList.remove('show'); }
+      });
+      document.addEventListener('click', function (e) {
+        if (!$('modePopover').classList.contains('show')) return;
+        if (!e.target.closest('#modePopover') && !e.target.closest('#modeBtn')) {
+          $('modePopover').classList.remove('show');
+        }
       });
 
       $('playBtn').addEventListener('click', togglePlay);
@@ -2388,7 +2444,7 @@
         }
         syncMediaSession();
       });
-      audio.addEventListener('play', function () { state.playing = true; state.resumeAfterInterruption = false; updatePlayButton(); syncMediaSession(); });
+      audio.addEventListener('play', function () { state.playing = true; updatePlayButton(); syncMediaSession(); });
       audio.addEventListener('pause', function () { state.playing = false; updatePlayButton(); syncMediaSession(); saveResume(); });
       audio.addEventListener('ended', function () {
         state._endedFired = true;
@@ -2421,7 +2477,6 @@
       });
       // 成功播放后清零错误计数
       audio.addEventListener('play', function () { state._errCount = 0; });
-      window.addEventListener('pagehide', saveResume);
       window.addEventListener('beforeunload', saveResume);
       $('nowCover').addEventListener('error', function () { $('nowCover').src = coverFallback; });
       $('nowCover').src = coverFallback;
@@ -2443,6 +2498,8 @@
       $('modeIcon').innerHTML = modeSvgs[state.playMode];
       $('modeBtn').classList.toggle('single-mode', state.playMode === 'single');
       $('modeBtn').classList.toggle('random-mode', state.playMode === 'random');
+      var opts = $('modePopover').querySelectorAll('.mode-option');
+      opts.forEach(function (o) { o.classList.toggle('active', o.dataset.mode === state.playMode); });
       applyPlayMode();
       restoreSession();
 
